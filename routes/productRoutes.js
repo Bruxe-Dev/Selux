@@ -3,7 +3,18 @@ import express from 'express'
 import * as productController from '../controller/productController.js'
 const router = express.Router()
 
+/**
+ * @swagger
+ * /api/products:
+ *  get:
+ *      summary: Get all Products
+ *      description: Return all the products that the Seller has
+ *      responses:
+ *          200:
+ *             description: A list of products
+ */
 router.get('/', productController.getProducts)
+
 router.post('/', productController.createProduct)
 router.get('/:id', productController.getProduct)
 router.patch('/:id', productController.updateProduct)
