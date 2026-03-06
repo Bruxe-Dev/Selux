@@ -20,9 +20,9 @@ router.get('/', productController.getProducts)
  * /api/products:
  *  post:
  *      summary: Creates a new Product
- *      description:THis api will help sellers create new products that they have purchased
+ *      description: This api will help sellers create new products that they have purchased
  *      responses:
- *          200:
+ *          201:
  *              description: A new Product created
  */
 router.post('/', productController.createProduct)
