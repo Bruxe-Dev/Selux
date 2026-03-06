@@ -3,6 +3,8 @@ dotenv.config()
 import express from 'express'
 import app from './app.js'
 import dbConnect from './config/database.js'
+import swaggeruiexpress from 'swagger-ui-express'
+import swaggerSpec from './swagger.js'
 
 dbConnect()
 
