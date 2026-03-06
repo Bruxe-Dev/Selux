@@ -15,6 +15,16 @@ const router = express.Router()
  */
 router.get('/', productController.getProducts)
 
+/**
+ * @swagger
+ * /api/products:
+ *  post:
+ *      summary: Creates a new Product
+ *      description:THis api will help sellers create new products that they have purchased
+ *      responses:
+ *          200:
+ *              description: A new Product created
+ */
 router.post('/', productController.createProduct)
 router.get('/:id', productController.getProduct)
 router.patch('/:id', productController.updateProduct)
