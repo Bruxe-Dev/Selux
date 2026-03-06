@@ -9,11 +9,12 @@ export const createProducts = async (data) => {
     const product = data
 
     if (!product) {
-        return res.status(400).json({
-            sucess: false,
-            message: "No product data given"
-        })
+        return {
+            "sucess": false,
+            "message": "No product data given"
+        }
     }
+
     return await Product.create(product)
 }
 
