@@ -8,6 +8,8 @@ import swaggerSpec from './swagger.js'
 
 dbConnect()
 
+app.use('/api/docs', swaggeruiexpress.serve, swaggeruiexpress.setup(swaggerSpec))
+
 app.get('/', (req, res) => {
     res.status(200).json({
         success: true,
