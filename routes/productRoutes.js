@@ -25,20 +25,21 @@ router.get('/', productController.getProducts)
  *          required: true
  *          content:
  *              application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 example: Laptop
- *               description:
- *                  type:string
- *               price:
- *                 type: number
- *                 example: 1200
- *               quantity:
- *                 type: number
- *                 example: 5
+ *                  schema:
+ *                      type: object
+ *                  properties:
+ *                      name:
+ *                          type: string
+ *                          example: Laptop
+ *                      description:
+ *                          type: string
+ *                          example: These are sample shoes 
+ *                      price:
+ *                          type: number
+ *                          example: 1200
+ *                      quantity:
+ *                          type: number
+ *                          example: 5
  *      responses:
  *          201:
  *              description: A new Product created
