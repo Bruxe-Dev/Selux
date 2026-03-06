@@ -18,6 +18,6 @@ const options = {
                 description: "This is a deployment server"
             }
         ],
-
+        apis: ['./routes/*.js']
     }
 }
