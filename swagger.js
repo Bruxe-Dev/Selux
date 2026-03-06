@@ -17,6 +17,7 @@ const options = {
                 url: "https://selux_app.vercel.app",
                 description: "This is a deployment server"
             }
-        ]
+        ],
+
     }
 }
