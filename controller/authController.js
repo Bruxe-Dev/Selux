@@ -1,6 +1,8 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import User from '../models/User'
 import bcrypt from 'bcryptjs'
-import jsonwebtoken from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import { use } from 'react'
 
 export const register = async (req, res) => {
@@ -32,4 +34,25 @@ export const login = async (req, res) => {
     }
 
     const user = await User.findOne({ email })
+
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        })
+    }
+
+    const isMatch = bcrypt.compare(password, user.password)
+
+    if (!isMatch) {
+        return res.status(401).json({
+            success: false,
+            message: "Invalid Credentials"
+        })
+    }
+
+    const token = jwt.sign(
+        { id: user._id, role: user.role },
+        process
+    )
 }
