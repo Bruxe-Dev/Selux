@@ -29,7 +29,9 @@ export const getProductByName = async (name) => {
             "message": "No product name given"
         }
     }
-    const productInfo = Product.findOne(name)
+    const productInfo = Product.findOne({ name })
+
+
 
     if (!productInfo) {
         return {
@@ -39,8 +41,8 @@ export const getProductByName = async (name) => {
     }
 
     return await productInfo
-}
 
+}
 export const updateProduct = async (id, data) => {
     return await Product.findByIdAndUpdate(id, data, { new: true })
 }
