@@ -17,24 +17,23 @@ router.get('/', productController.getProducts)
 
 /**
  * @swagger
- * /api/products/search:
- *  get:
- *      summary:Finds products by name
- *      description: This api is to help people find specific product by thier names
- *      parameters:
- *          - in: path
- *          name:name
- *          required:false
- *          description: Product name to search
- *          schema:
- *              type:string
- *              example: laptop
- * 
- *       responses:
- *          200:
- *              description: Products found
- *          404:
- *              description: Product not found
+ * /api/products/search/{name}:
+ *   get:
+ *     summary: Finds products by name
+ *     description: This api helps people find products by their name
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         description: Product name to search
+ *         schema:
+ *           type: string
+ *           example: laptop
+ *     responses:
+ *       200:
+ *         description: Products found
+ *       404:
+ *         description: Product not found
  */
 router.get('/search/:name', productController.getProductByName)
 /**
