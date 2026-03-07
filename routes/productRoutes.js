@@ -22,7 +22,7 @@ router.get('/', productController.getProducts)
  *      summary:Finds products by name
  *      description: This api is to help people find specific product by thier names
  *      parameters:
- *          - in: query
+ *          - in: path
  *          name:name
  *          required:false
  *          description: Product name to search
@@ -66,8 +66,39 @@ router.get('/search/:name', productController.getProductByName)
 *          201:
 *              description: A new Product created
 */
-
 router.get('/search/:id', productController.getProduct)
+
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     summary: Create product
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - price
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Laptop
+ *               description:
+ *                 type: string
+ *                 example: High performance laptop
+ *               price:
+ *                 type: number
+ *                 example: 1200
+ *               quantity:
+ *                 type: number
+ *                 example: 5
+ *     responses:
+ *       201:
+ *         description: Product created
+ */
 router.post('/', productController.createProduct)
 router.patch('/:id', productController.updateProduct)
 router.delete('/:id', productController.deleteProduct)
