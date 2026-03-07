@@ -22,6 +22,25 @@ export const getProductById = async (id) => {
     return await Product.findById(id)
 }
 
+export const getProductByName = async (name) => {
+    if (!name) {
+        return {
+            "sucess": false,
+            "message": "No product name given"
+        }
+    }
+    const productInfo = Product.findOne(name)
+
+    if (!productInfo) {
+        return {
+            "sucess": false,
+            "message": "Product not found"
+        }
+    }
+
+    return await productInfo
+}
+
 export const updateProduct = async (id, data) => {
     return await Product.findByIdAndUpdate(id, data, { new: true })
 }
