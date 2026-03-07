@@ -38,7 +38,7 @@ router.get('/', productController.getProducts)
 router.get('/search/:name', productController.getProductByName)
 /**
 * @swagger
-* /api/products:
+* /api/products/{id}:
 *  post:
 *      summary: Creates a new Product
 *      description: This api will help sellers create new products that they have purchased
@@ -65,7 +65,7 @@ router.get('/search/:name', productController.getProductByName)
 *          201:
 *              description: A new Product created
 */
-router.get('/search/:id', productController.getProduct)
+router.get('/:id', productController.getProduct)
 
 /**
  * @swagger
