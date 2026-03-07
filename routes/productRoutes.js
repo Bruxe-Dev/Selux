@@ -126,6 +126,8 @@ router.post('/', productController.createProduct)
  *                 type: number
  *               quantity:
  *                 type: number
+ *               inStock:
+ *                  type:boolean
  *     responses:
  *       200:
  *         description: Product updated
