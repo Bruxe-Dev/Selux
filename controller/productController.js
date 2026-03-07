@@ -29,6 +29,26 @@ export const getProducts = async (req, res) => {
     }
 }
 
+export const getProductByName = async (req, res) => {
+    try {
+        const name = req.params
+        if (!name) {
+            res.status(400).json({
+                success: false,
+                message: "No product name given"
+            })
+        }
+        productData = await productService.getProductByName(name)
+
+        res.status(200).json({
+            success: true,
+            data: productData
+        })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
 export const getProduct = async (req, res) => {
     try {
 
