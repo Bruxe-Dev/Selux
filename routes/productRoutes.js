@@ -131,6 +131,23 @@ router.post('/', productController.createProduct)
  *         description: Product updated
  */
 router.patch('/:id', productController.updateProduct)
+
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   delete:
+ *     summary: Delete a product
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Product ID
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Product deleted
+ */
 router.delete('/:id', productController.deleteProduct)
 
 export default router
