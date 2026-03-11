@@ -19,7 +19,16 @@ const options = {
             }
         ]
     },
-    apis: ['./routes/*.js']
+    apis: ['./routes/*.js'],
+    components: {
+        securitySchema: {
+            bearerAuth: {
+                type: "http",
+                scheme: "bearer",
+                bearerFormat: "JWT"
+            }
+        }
+    }
 }
 
 
