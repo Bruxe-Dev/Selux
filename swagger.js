@@ -21,7 +21,7 @@ const options = {
     },
     apis: ['./routes/*.js'],
     components: {
-        securitySchema: {
+        securitySchemes: {
             bearerAuth: {
                 type: "http",
                 scheme: "bearer",
