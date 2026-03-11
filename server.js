@@ -1,5 +1,3 @@
-import dotenv from 'dotenv'
-dotenv.config()
 import config from './config.js'
 import app from './app.js'
 import dbConnect from './config/database.js'
