@@ -4,5 +4,6 @@ dotenv.config()
 export default {
     port: process.env.PORT || 3000,
     mongodb_uri: process.env.MONGODB_URI,
-    jwt_secret: process.env.JWT_SECRET
+    jwt_secret: process.env.JWT_SECRET,
+    jwt_expire: process.env.JWT_EXPIRE
 }

@@ -1,5 +1,4 @@
-import dotenv from 'dotenv'
-dotenv.config()
+import config from '../config'
 import User from '../models/User'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
@@ -53,7 +52,7 @@ export const login = async (req, res) => {
 
     const token = jwt.sign(
         { id: user._id, role: user.role },
-        process.env.JWT_SECRET,
-        process.env.JWT_EXPIRE
+        config.jwt_secret,
+        config.jwt_expire
     )
 }
