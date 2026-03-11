@@ -1,6 +1,10 @@
 import Product from '../models/Product.js'
 import express from 'express'
 import * as productController from '../controller/productController.js'
+import {
+    authenticate
+
+} from '../middleware/authMiddleware.js'
 
 const router = express.Router()
 
@@ -14,7 +18,7 @@ const router = express.Router()
  *       200:
  *         description: A list of products
  */
-router.get('/', productController.getProducts)
+router.get('/', authenticate, productController.getProducts)
 
 /**
  * @swagger
@@ -36,7 +40,7 @@ router.get('/', productController.getProducts)
  *       404:
  *         description: Product not found
  */
-router.get('/search/:name', productController.getProductByName)
+router.get('/search/:name', authenticate, productController.getProductByName)
 
 /**
  * @swagger
@@ -58,7 +62,7 @@ router.get('/search/:name', productController.getProductByName)
  *       404:
  *         description: Product not found
  */
-router.get('/:id', productController.getProduct)
+router.get('/:id', authenticate, productController.getProduct)
 
 /**
  * @swagger
@@ -92,7 +96,7 @@ router.get('/:id', productController.getProduct)
  *       201:
  *         description: Product created successfully
  */
-router.post('/', productController.createProduct)
+router.post('/', authenticate, productController.createProduct)
 
 /**
  * @swagger
@@ -126,7 +130,7 @@ router.post('/', productController.createProduct)
  *       200:
  *         description: Product updated successfully
  */
-router.patch('/:id', productController.updateProduct)
+router.patch('/:id', authenticate, productController.updateProduct)
 
 /**
  * @swagger
@@ -145,6 +149,6 @@ router.patch('/:id', productController.updateProduct)
  *       200:
  *         description: Product deleted successfully
  */
-router.delete('/:id', productController.deleteProduct)
+router.delete('/:id', authenticate, productController.deleteProduct)
 
 export default router
