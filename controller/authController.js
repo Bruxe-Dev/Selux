@@ -2,7 +2,6 @@ import config from '../config'
 import User from '../models/User'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { use } from 'react'
 
 export const register = async (req, res) => {
     const { name, email, password } = req.body
