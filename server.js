@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import express from 'express'
+import config from './config.js'
 import app from './app.js'
 import dbConnect from './config/database.js'
 import swaggeruiexpress from 'swagger-ui-express'
@@ -16,6 +16,6 @@ app.get('/', (req, res) => {
         message: "Welcome to selux"
     })
 })
-app.listen(process.env.PORT, () => {
-    console.log(`Server listening on port ${process.env.PORT}`)
+app.listen(config.port, () => {
+    console.log(`Server listening on port ${config.port}`)
 })
