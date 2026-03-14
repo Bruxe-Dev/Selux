@@ -22,7 +22,7 @@ export const register = async (req, res) => {
     })
 
     res.status(201).json({
-        message: "User createsd sucessfuly",
+        message: "Registered Successfully",
         user
     })
 }
