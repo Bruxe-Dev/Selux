@@ -98,7 +98,7 @@ router.get('/:id', authenticate, productController.getProduct)
  *       201:
  *         description: Product created successfully
  */
-router.post('/', authenticate, productController.createProduct)
+router.post('/', validateProduct, handleValidationErrors, authenticate, productController.createProduct)
 
 /**
  * @swagger
