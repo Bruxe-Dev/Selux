@@ -1,18 +1,19 @@
 import express from 'express'
-import * as authController from '../controller/authController'
-import { validateUser } from '../middleware/validateUser'
-import { handleValidationErrors } from '../middleware/handleValidation'
+import * as authController from '../controller/authController.js'
+import { validateUser } from '../middleware/validateUser.js'
+import { handleValidationErrors } from '../middleware/handleValidation.js'
 
 const router = express.Router()
 
 /**
  * @swagger
- * api/auth/register:
- *  post:
- *      summary: Register a new user
- *      description:Create a new user
- *      requestBody:
- *      content:
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Create a new user
+ *     requestBody:
+ *       required: true
+ *       content:
  *         application/json:
  *           schema:
  *             type: object
@@ -30,7 +31,12 @@ const router = express.Router()
  *       201:
  *         description: User registered successfully
  */
-router.post('/register', authController.register, validateUser, handleValidationErrors)
+router.post(
+    '/register',
+    validateUser,
+    handleValidationErrors,
+    authController.register
+)
 
 /**
  * @swagger
