@@ -1,6 +1,8 @@
 import Product from '../models/Product.js'
 import express from 'express'
 import * as productController from '../controller/productController.js'
+import { validateProduct } from '../middleware/validationMiddleware.js'
+import { handleValidationErrors } from '../middleware/handleValidation.js'
 import {
     authenticate
 
