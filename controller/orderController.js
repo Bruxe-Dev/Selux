@@ -39,3 +39,17 @@ export const createOrder = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal Server error" })
     }
 }
+
+export const getMyOrders = async (req, res) => {
+    try {
+
+        const orders = await Order.find({ client: req.user._id })
+            .populate("product", "name price")
+            .sort({ createdAt: -1 })
+
+        res.status(200).json(orders)
+
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
