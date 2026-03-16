@@ -5,7 +5,6 @@ import { validateProduct } from '../middleware/validationMiddleware.js'
 import { handleValidationErrors } from '../middleware/handleValidation.js'
 import {
     authenticate
-
 } from '../middleware/authMiddleware.js'
 
 const router = express.Router()
