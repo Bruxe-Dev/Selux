@@ -25,6 +25,11 @@ const productSchema = new mongoose.Schema({
         default: 0,
         max: [20, 'Discount cannot overceed 20 percent']
     },
+    seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     inStock: {
         type: Boolean,
         default: true
