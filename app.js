@@ -6,6 +6,6 @@ const app = express()
 app.use(express.json())
 
 app.use("/api/products", productRoutes)
-application.use('/api/order', orderRoutes)
+application.use('/api/orders', orderRoutes)
 
 export default app

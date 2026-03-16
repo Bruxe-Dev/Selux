@@ -6,7 +6,7 @@ const router = express.Router()
 
 /**
  * @swagger
- * /api/order:
+ * /api/orders:
  *  post:
  *  summary: Create an order
  *  description: The customer creates an order from ones store
