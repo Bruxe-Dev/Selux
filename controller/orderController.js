@@ -20,4 +20,18 @@ export const createOrder = async (req, res) => {
             message: "Product Not In Stock"
         })
     }
+
+    const totalPrice = product.price * quantity;
+
+    const order = await Order.create({
+        product: productId,
+        client: req.user._id,
+        quantity,
+        totalPrice
+    })
+
+    res.status(201).json({
+        success: true,
+        order
+    })
 }
