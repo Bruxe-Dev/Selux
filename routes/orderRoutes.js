@@ -1,6 +1,6 @@
 import * as orderController from '../controller/orderController.js'
 import express from 'express'
-import { authenticate } from '../middleware/authMiddleware.js'
+import { authenticate, authorizeRoles } from '../middleware/authMiddleware.js'
 
 const router = express.Router()
 
@@ -36,7 +36,7 @@ const router = express.Router()
  *       401:
  *         description: Unauthorized
  */
-router.post('/', authenticate, orderController.createOrder)
+router.post('/', authenticate, authorizeRoles('client'), orderController.createOrder)
 
 /**
  * @swagger
@@ -52,6 +52,6 @@ router.post('/', authenticate, orderController.createOrder)
  *       401:
  *         description: Unauthorized
  */
-router.get('/my-orders', authenticate, orderController.getMyOrders)
+router.get('/my-orders', authenticate, authorizeRoles('client', 'admin'), orderController.getMyOrders)
 
 export default router
