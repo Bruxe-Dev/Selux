@@ -24,24 +24,16 @@ export const getProductById = async (id) => {
 
 export const getProductByName = async (name) => {
     if (!name) {
-        return {
-            "sucess": false,
-            "message": "No product name given"
-        }
+        throw new Error('No product name given')
     }
-    const productInfo = Product.findOne({ name })
 
-
+    const productInfo = await Product.findOne({ name: new RegExp(name, 'i') })
 
     if (!productInfo) {
-        return {
-            "sucess": false,
-            "message": "Product not found"
-        }
+        throw new Error('Product not found')
     }
 
-    return await productInfo
-
+    return productInfo
 }
 export const updateProduct = async (id, data) => {
     return await Product.findByIdAndUpdate(id, data, { new: true })
