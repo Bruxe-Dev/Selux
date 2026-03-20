@@ -51,6 +51,7 @@ export const getProductByName = async (req, res) => {
             success: true,
             data: productData
         })
+
     } catch (error) {
         return res.status(404).json({ success: false, message: error.message })
     }
