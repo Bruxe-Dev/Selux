@@ -2,18 +2,23 @@ import * as productService from "../services/productService.js"
 
 export const createProduct = async (req, res) => {
     try {
+        if (!req.user || !['seller', 'admin'].includes(req.user.role)) {
+            return res.status(403).json({ success: false, message: 'Only seller/admin can create products' })
+        }
 
-        const product = await productService.createProducts(req.body)
+        const productData = {
+            ...req.body,
+            seller: req.user.id
+        }
+
+        const product = await productService.createProducts(productData)
 
         res.status(201).json({
             success: true,
             data: product
         })
-
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
+        res.status(500).json({ message: error.message })
     }
 }
 
@@ -69,14 +74,18 @@ export const getProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
+        const product = await productService.getProductById(req.params.id)
 
-        const product = await productService.updateProduct(
-            req.params.id,
-            req.body
-        )
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' })
+        }
 
-        res.json(product)
+        if (req.user.role !== 'admin' && product.seller.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'You are not allowed to update this product' })
+        }
 
+        const updated = await productService.updateProduct(req.params.id, req.body)
+        res.json(updated)
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
@@ -84,13 +93,19 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
     try {
+        const product = await productService.getProductById(req.params.id)
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' })
+        }
+
+        if (req.user.role !== 'admin' && product.seller.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'You are not allowed to delete this product' })
+        }
 
         await productService.deleteProduct(req.params.id)
 
-        res.json({
-            message: "Product deleted"
-        })
-
+        res.json({ message: 'Product deleted' })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }

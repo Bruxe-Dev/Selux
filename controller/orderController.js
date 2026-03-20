@@ -2,53 +2,63 @@ import Order from '../models/Order.js'
 import Product from '../models/Product.js'
 
 export const createOrder = async (req, res) => {
-
     try {
-        const { productId, quantity } = req.body;
+        const { productId, quantity } = req.body
 
-        if (!productId || quantity) {
+        if (!productId || !quantity) {
             return res.status(400).json({
                 success: false,
-                message: "No Order specified"
+                message: 'ProductId and quantity are required'
             })
         }
 
-        const product = await Product.findById({ productId })
+        const product = await Product.findById(productId)
 
-        if (!product) {
+        if (!product || product.quantity < quantity) {
             return res.status(404).json({
                 success: false,
-                message: "Product Not In Stock"
+                message: 'Product not found or insufficient quantity'
             })
         }
 
-        const totalPrice = product.price * quantity;
+        if (!req.user || req.user.role !== 'client') {
+            return res.status(403).json({ success: false, message: 'Only buyers can place orders' })
+        }
+
+        const totalPrice = product.price * quantity
 
         const order = await Order.create({
             product: productId,
-            client: req.user._id,
+            client: req.user.id,
             quantity,
             totalPrice
         })
+
+        // Decrease stock quantity
+        product.quantity -= quantity
+        if (product.quantity === 0) product.inStock = false
+        await product.save()
 
         res.status(201).json({
             success: true,
             order
         })
     } catch (err) {
-        return res.status(500).json({ success: false, message: "Internal Server error" })
+        return res.status(500).json({ success: false, message: 'Internal Server error' })
     }
 }
 
 export const getMyOrders = async (req, res) => {
     try {
+        let orders
 
-        const orders = await Order.find({ client: req.user._id })
-            .populate("product", "name price")
-            .sort({ createdAt: -1 })
+        if (req.user.role === 'admin') {
+            orders = await Order.find().populate('product', 'name price').sort({ createdAt: -1 })
+        } else {
+            orders = await Order.find({ client: req.user.id }).populate('product', 'name price').sort({ createdAt: -1 })
+        }
 
         res.status(200).json(orders)
-
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
