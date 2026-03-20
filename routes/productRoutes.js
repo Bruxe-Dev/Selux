@@ -4,7 +4,8 @@ import * as productController from '../controller/productController.js'
 import { validateProduct } from '../middleware/validationMiddleware.js'
 import { handleValidationErrors } from '../middleware/handleValidation.js'
 import {
-    authenticate
+    authenticate,
+    authorizeRoles
 } from '../middleware/authMiddleware.js'
 
 const router = express.Router()
@@ -97,7 +98,7 @@ router.get('/:id', authenticate, productController.getProduct)
  *       201:
  *         description: Product created successfully
  */
-router.post('/', validateProduct, handleValidationErrors, authenticate, productController.createProduct)
+router.post('/', validateProduct, handleValidationErrors, authenticate, authorizeRoles('seller', 'admin'), productController.createProduct)
 
 /**
  * @swagger
@@ -131,7 +132,7 @@ router.post('/', validateProduct, handleValidationErrors, authenticate, productC
  *       200:
  *         description: Product updated successfully
  */
-router.patch('/:id', authenticate, productController.updateProduct)
+router.patch('/:id', authenticate, authorizeRoles('seller', 'admin'), productController.updateProduct)
 
 /**
  * @swagger
@@ -150,6 +151,6 @@ router.patch('/:id', authenticate, productController.updateProduct)
  *       200:
  *         description: Product deleted successfully
  */
-router.delete('/:id', authenticate, productController.deleteProduct)
+router.delete('/:id', authenticate, authorizeRoles('seller', 'admin'), productController.deleteProduct)
 
 export default router
