@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (to, subject, html) => {
     try {
         await transporter.sendMail({
-            from: `"Selux App" < ${config.email_user}>`,
+            from: `"Selux App" < ${config.selux_email}>`,
             to,
             subject,
             html
