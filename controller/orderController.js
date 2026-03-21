@@ -52,42 +52,25 @@ export const getMyOrders = async (req, res) => {
     try {
         let orders
 
-        if (req.user.role === 'admin') {
-            orders = await Order.find().populate('product', 'name price').sort({ createdAt: -1 })
-        } else {
-            orders = await Order.find({ client: req.user.id }).populate('product', 'name price').sort({ createdAt: -1 })
-        }
-
-        res.status(200).json(orders)
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-// ... existing code ...
-
-export const getMyOrders = async (req, res) => {
-    try {
-        let orders
-
         if (req.user.role === 'client') {
             // Buyers see only their orders
-            orders = await Order.find({ buyer: req.user.id })
+            orders = await Order.find({ client: req.user.id })
                 .populate('product', 'name price')
-                .populate('seller', 'name email')
+                .sort({ createdAt: -1 })
         } else if (req.user.role === 'seller') {
             // Sellers see orders for their products
             const products = await Product.find({ seller: req.user.id }).select('_id')
             const productIds = products.map(p => p._id)
             orders = await Order.find({ product: { $in: productIds } })
                 .populate('product', 'name price')
-                .populate('buyer', 'name email')
+                .populate('client', 'name email')
+                .sort({ createdAt: -1 })
         } else {
             // Admins see all orders
             orders = await Order.find()
                 .populate('product', 'name price')
-                .populate('buyer', 'name email')
-                .populate('seller', 'name email')
+                .populate('client', 'name email')
+                .sort({ createdAt: -1 })
         }
 
         res.status(200).json({
@@ -98,6 +81,56 @@ export const getMyOrders = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' })
     }
+}
+
+export const getSellerOrders = async (req, res) => {
+    try {
+        // Get all products by this seller
+        const products = await Product.find({ seller: req.user.id }).select('_id')
+        const productIds = products.map(p => p._id)
+
+        // Get all orders for these products
+        const orders = await Order.find({ product: { $in: productIds } })
+            .populate('product', 'name price')
+            .populate('client', 'name email')
+            .sort({ createdAt: -1 })
+
+        res.status(200).json({
+            success: true,
+            count: orders.length,
+            data: orders
+        })
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' })
+    }
+}
+
+export const updateOrderStatus = async (req, res) => {
+    try {
+        const { status } = req.body
+        const validStatuses = ['pending', 'confirmed', 'shipped', 'delivered']
+
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid status. Must be one of: ' + validStatuses.join(', ')
+            })
+        }
+
+        // Ownership check is handled by middleware
+        const order = req.order
+
+        order.status = status
+        await order.save()
+
+        res.status(200).json({
+            success: true,
+            data: order
+        })
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' })
+    }
+}
 }
 
 // ... existing code ...

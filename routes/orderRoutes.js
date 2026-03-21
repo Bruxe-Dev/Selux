@@ -1,6 +1,7 @@
 import * as orderController from '../controller/orderController.js'
 import express from 'express'
 import { authenticate, authorizeRoles } from '../middleware/authMiddleware.js'
+import { checkOrderOwnership } from '../middleware/ownershipMiddleware.js'
 
 const router = express.Router()
 

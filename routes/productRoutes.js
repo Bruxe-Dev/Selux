@@ -7,6 +7,7 @@ import {
     authenticate,
     authorizeRoles
 } from '../middleware/authMiddleware.js'
+import { checkProductOwnership } from '../middleware/ownershipMiddleware.js'
 
 const router = express.Router()
 
@@ -132,7 +133,7 @@ router.post('/', validateProduct, handleValidationErrors, authenticate, authoriz
  *       200:
  *         description: Product updated successfully
  */
-router.patch('/:id', authenticate, authorizeRoles('seller', 'admin'), productController.updateProduct)
+router.patch('/:id', authenticate, authorizeRoles('seller', 'admin'), checkProductOwnership, productController.updateProduct)
 
 /**
  * @swagger
@@ -151,6 +152,6 @@ router.patch('/:id', authenticate, authorizeRoles('seller', 'admin'), productCon
  *       200:
  *         description: Product deleted successfully
  */
-router.delete('/:id', authenticate, authorizeRoles('seller', 'admin'), productController.deleteProduct)
+router.delete('/:id', authenticate, authorizeRoles('seller', 'admin'), checkProductOwnership, productController.deleteProduct)
 
 export default router

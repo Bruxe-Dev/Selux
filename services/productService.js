@@ -5,6 +5,10 @@ export const getProducts = async () => {
     return await Product.find()
 }
 
+export const getProductsBySeller = async (sellerId) => {
+    return await Product.find({ seller: sellerId })
+}
+
 export const createProducts = async (data) => {
     const product = data
 

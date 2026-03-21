@@ -28,14 +28,14 @@ export const checkProductOwnership = async (req, res, next) => {
 
 export const checkOrderOwnership = async (req, res, next) => {
     try {
-        const order = await Order.findById(req.params.id).populate('buyer')
+        const order = await Order.findById(req.params.id).populate('client')
 
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' })
         }
 
         // Buyers can only access their own orders
-        if (req.user.role === 'client' && order.buyer.toString() !== req.user.id) {
+        if (req.user.role === 'client' && order.client.toString() !== req.user.id) {
             return res.status(403).json({
                 success: false,
                 message: 'NOT AUTHORIZED'

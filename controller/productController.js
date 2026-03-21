@@ -24,13 +24,23 @@ export const createProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
     try {
+        let products
 
-        const products = await productService.getProducts()
+        if (req.user.role === 'seller') {
+            // Sellers only see their own products
+            products = await productService.getProductsBySeller(req.user.id)
+        } else {
+            // Buyers and admins see all products
+            products = await productService.getProducts()
+        }
 
-        res.json(products)
-
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            data: products
+        })
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ success: false, message: error.message })
     }
 }
 
