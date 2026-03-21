@@ -24,3 +24,8 @@ export const checkProductOwnership = async (req, res, next) => {
         res.status(500).json({ success: false, message: 'Server error' })
     }
 }
+
+
+export const checkOrderOwnership = async (req, res, next) => {
+    const order = await Order.findById(req.params.id).populate('buyer')
+}
