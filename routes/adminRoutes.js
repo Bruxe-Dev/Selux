@@ -10,6 +10,8 @@ const router = express.Router()
  *   get:
  *     summary: Get all users
  *     description: Admin only - Get all users categorized by role
+ *     tags:
+ *      - Administration
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -26,11 +28,15 @@ router.get('/users', authenticate, authorizeAdmin, adminController.getAllUsers)
  *   get:
  *     summary: Get all orders
  *     description: Admin only - Get all orders in the system
+ *     tags:
+ *      - Administration
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of all orders
+ *       403:
+ *         description: Admin access required
  */
 router.get('/orders', authenticate, authorizeAdmin, adminController.getAllOrders)
 
@@ -40,6 +46,8 @@ router.get('/orders', authenticate, authorizeAdmin, adminController.getAllOrders
  *   delete:
  *     summary: Delete a user
  *     description: Admin only - Delete a user by ID
+ *     tags:
+ *      - Administration
  *     parameters:
  *       - in: path
  *         name: type
@@ -47,16 +55,22 @@ router.get('/orders', authenticate, authorizeAdmin, adminController.getAllOrders
  *         schema:
  *           type: string
  *           enum: [user, seller]
+ *           description: Type of user to delete
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
+ *           description: User ID to delete
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User deleted
+ *         description: User deleted successfully
+ *       403:
+ *         description: Admin access required
+ *       404:
+ *         description: User not found
  */
 router.delete('/users/:type/:id', authenticate, authorizeAdmin, adminController.deleteUser)
 
@@ -66,6 +80,8 @@ router.delete('/users/:type/:id', authenticate, authorizeAdmin, adminController.
  *   patch:
  *     summary: Update user role
  *     description: Admin only - Change a user's role
+ *     tags:
+ *      - Administration
  *     parameters:
  *       - in: path
  *         name: type
@@ -73,11 +89,13 @@ router.delete('/users/:type/:id', authenticate, authorizeAdmin, adminController.
  *         schema:
  *           type: string
  *           enum: [user, seller]
+ *           description: Type of user
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
+ *           description: User ID
  *     requestBody:
  *       required: true
  *       content:
@@ -88,11 +106,18 @@ router.delete('/users/:type/:id', authenticate, authorizeAdmin, adminController.
  *               newRole:
  *                 type: string
  *                 enum: [client, admin]
+ *                 description: New role to assign
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Role updated
+ *         description: Role updated successfully
+ *       400:
+ *         description: Invalid role
+ *       403:
+ *         description: Admin access required
+ *       404:
+ *         description: User not found
  */
 router.patch('/users/:type/:id/role', authenticate, authorizeAdmin, adminController.updateUserRole)
 

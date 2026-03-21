@@ -10,9 +10,9 @@ const router = express.Router()
  * /api/auth/register:
  *   post:
  *     summary: Register a new user
- *     description: Create a new user
+ *     description: Create a new user account (requires email confirmation)
  *     tags:
- *      - Authentication
+ *      - Authentication & Authorization
  *     requestBody:
  *       required: true
  *       content:
@@ -29,9 +29,18 @@ const router = express.Router()
  *               password:
  *                 type: string
  *                 example: password123
+ *               role:
+ *                 type: string
+ *                 enum: [client, seller, admin]
+ *                 example: client
+ *               phone:
+ *                 type: string
+ *                 example: "+1234567890"
  *     responses:
- *       201:
- *         description: User registered successfully
+ *       200:
+ *         description: Registration initiated - check email for confirmation
+ *       400:
+ *         description: Invalid input or user already exists
  */
 router.post(
     '/register',
@@ -46,15 +55,20 @@ router.post(
  *   get:
  *     summary: Confirm email
  *     description: Confirm user email to complete registration
+ *     tags:
+ *      - Authentication & Authorization
  *     parameters:
  *       - in: query
  *         name: token
  *         required: true
  *         schema:
  *           type: string
+ *         description: Email confirmation token
  *     responses:
  *       201:
- *         description: Email confirmed and user registered
+ *         description: Email confirmed and user registered successfully
+ *       400:
+ *         description: Invalid or expired token
  */
 router.get('/confirm-email', authController.confirmEmail)
 
@@ -64,6 +78,8 @@ router.get('/confirm-email', authController.confirmEmail)
  *   post:
  *     summary: Login user
  *     description: Authenticate user and return JWT token
+ *     tags:
+ *      - Authentication & Authorization
  *     requestBody:
  *       required: true
  *       content:
@@ -79,7 +95,11 @@ router.get('/confirm-email', authController.confirmEmail)
  *                 example: password123
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Login successful - returns JWT token
+ *       401:
+ *         description: Invalid credentials
+ *       404:
+ *         description: User not found
  */
 router.post('/login', authController.login)
 

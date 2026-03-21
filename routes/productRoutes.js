@@ -16,10 +16,16 @@ const router = express.Router()
  * /api/products:
  *   get:
  *     summary: Get all Products
- *     description: Return all the products that the seller has
+ *     description: Return products based on user role (sellers see their products, others see all)
+ *     tags:
+ *      - Products
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of products
+ *       401:
+ *         description: Authentication required
  */
 router.get('/', authenticate, productController.getProducts)
 
@@ -28,7 +34,9 @@ router.get('/', authenticate, productController.getProducts)
  * /api/products/search/{name}:
  *   get:
  *     summary: Find products by name
- *     description: This API helps users find products by their name
+ *     description: Search for products by name (case-insensitive)
+ *     tags:
+ *      - Products
  *     parameters:
  *       - in: path
  *         name: name
@@ -37,11 +45,15 @@ router.get('/', authenticate, productController.getProducts)
  *         schema:
  *           type: string
  *           example: laptop
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Products found
  *       404:
  *         description: Product not found
+ *       401:
+ *         description: Authentication required
  */
 router.get('/search/:name', authenticate, productController.getProductByName)
 
@@ -51,6 +63,8 @@ router.get('/search/:name', authenticate, productController.getProductByName)
  *   get:
  *     summary: Get product by ID
  *     description: Retrieve a single product using its ID
+ *     tags:
+ *      - Products
  *     parameters:
  *       - in: path
  *         name: id
@@ -59,11 +73,15 @@ router.get('/search/:name', authenticate, productController.getProductByName)
  *         schema:
  *           type: string
  *           example: 66522abc
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Product retrieved successfully
  *       404:
  *         description: Product not found
+ *       401:
+ *         description: Authentication required
  */
 router.get('/:id', authenticate, productController.getProduct)
 
@@ -72,7 +90,9 @@ router.get('/:id', authenticate, productController.getProduct)
  * /api/products:
  *   post:
  *     summary: Create a new product
- *     description: This API allows sellers to create new products
+ *     description: Create a new product (sellers and admins only)
+ *     tags:
+ *      - Products
  *     requestBody:
  *       required: true
  *       content:
@@ -82,6 +102,7 @@ router.get('/:id', authenticate, productController.getProduct)
  *             required:
  *               - name
  *               - price
+ *               - quantity
  *             properties:
  *               name:
  *                 type: string
@@ -95,9 +116,18 @@ router.get('/:id', authenticate, productController.getProduct)
  *               quantity:
  *                 type: number
  *                 example: 5
+ *               discount:
+ *                 type: number
+ *                 example: 10
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       201:
  *         description: Product created successfully
+ *       403:
+ *         description: Only sellers and admins can create products
+ *       401:
+ *         description: Authentication required
  */
 router.post('/', validateProduct, handleValidationErrors, authenticate, authorizeRoles('seller', 'admin'), productController.createProduct)
 
@@ -106,7 +136,9 @@ router.post('/', validateProduct, handleValidationErrors, authenticate, authoriz
  * /api/products/{id}:
  *   patch:
  *     summary: Update a product
- *     description: Update product information using the product ID
+ *     description: Update product information (sellers can only update their own products)
+ *     tags:
+ *      - Products
  *     parameters:
  *       - in: path
  *         name: id
@@ -123,15 +155,25 @@ router.post('/', validateProduct, handleValidationErrors, authenticate, authoriz
  *             properties:
  *               name:
  *                 type: string
+ *               description:
+ *                 type: string
  *               price:
  *                 type: number
  *               quantity:
  *                 type: number
- *               inStock:
- *                 type: boolean
+ *               discount:
+ *                 type: number
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Product updated successfully
+ *       403:
+ *         description: Not authorized to update this product
+ *       404:
+ *         description: Product not found
+ *       401:
+ *         description: Authentication required
  */
 router.patch('/:id', authenticate, authorizeRoles('seller', 'admin'), checkProductOwnership, productController.updateProduct)
 
@@ -140,7 +182,9 @@ router.patch('/:id', authenticate, authorizeRoles('seller', 'admin'), checkProdu
  * /api/products/{id}:
  *   delete:
  *     summary: Delete a product
- *     description: Remove a product using its ID
+ *     description: Remove a product (sellers can only delete their own products)
+ *     tags:
+ *      - Products
  *     parameters:
  *       - in: path
  *         name: id
@@ -148,9 +192,17 @@ router.patch('/:id', authenticate, authorizeRoles('seller', 'admin'), checkProdu
  *         description: Product ID
  *         schema:
  *           type: string
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Product deleted successfully
+ *       403:
+ *         description: Not authorized to delete this product
+ *       404:
+ *         description: Product not found
+ *       401:
+ *         description: Authentication required
  */
 router.delete('/:id', authenticate, authorizeRoles('seller', 'admin'), checkProductOwnership, productController.deleteProduct)
 
