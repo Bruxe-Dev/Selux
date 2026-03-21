@@ -32,6 +32,17 @@ export const register = async (req, res) => {
 
         //Sending an email for confiramation
 
+        await sendEmail(
+            email,
+            "Welcome to selux"
+                `
+                <h2>Hello ${name}!</h2>
+                <p>Your account has been created Successfuly</p>
+                <p>Trade, Buy, Sell and Ship Products all over the World</p
+                <p>  Start you journey now </p>
+                `
+        )
+
         const token = jwt.sign(
             { id: user._id, role: user.role },
             config.jwt_secret,
