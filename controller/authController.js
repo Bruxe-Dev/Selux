@@ -30,6 +30,12 @@ export const register = async (req, res) => {
             role: role || 'client'
         })
 
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            config.jwt_secret,
+            { expiresIn: config.jwt_expire || '1d' }
+        )
+
         //Sending an email for confiramation
 
         await sendEmail(
@@ -41,12 +47,6 @@ export const register = async (req, res) => {
                 <p>Trade, Buy, Sell and Ship Products all over the World</p
                 <p>  Start you journey now </p>
                 `
-        )
-
-        const token = jwt.sign(
-            { id: user._id, role: user.role },
-            config.jwt_secret,
-            { expiresIn: config.jwt_expire || '1d' }
         )
 
         return res.status(201).json({
