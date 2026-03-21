@@ -1,4 +1,5 @@
 import * as productService from "../services/productService.js"
+import Product from '../models/Product.js'
 
 export const createProduct = async (req, res) => {
     try {
@@ -18,7 +19,7 @@ export const createProduct = async (req, res) => {
             data: product
         })
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ success: false, message: error.message })
     }
 }
 
@@ -28,10 +29,10 @@ export const getProducts = async (req, res) => {
 
         if (req.user.role === 'seller') {
             // Sellers only see their own products
-            products = await productService.getProductsBySeller(req.user.id)
+            products = await Product.find({ seller: req.user.id })
         } else {
             // Buyers and admins see all products
-            products = await productService.getProducts()
+            products = await Product.find()
         }
 
         res.status(200).json({
@@ -40,7 +41,7 @@ export const getProducts = async (req, res) => {
             data: products
         })
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message })
+        res.status(500).json({ success: false, message: 'Server error' })
     }
 }
 
@@ -69,86 +70,24 @@ export const getProductByName = async (req, res) => {
 
 export const getProduct = async (req, res) => {
     try {
-
         const product = await productService.getProductById(req.params.id)
 
         if (!product) {
             return res.status(404).json({
+                success: false,
                 message: "Product not found"
             })
         }
 
-        res.json(product)
-
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-export const updateProduct = async (req, res) => {
-    try {
-        const product = await productService.getProductById(req.params.id)
-
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' })
-        }
-
-        if (req.user.role !== 'admin' && product.seller.toString() !== req.user.id) {
-            return res.status(403).json({ message: 'You are not allowed to update this product' })
-        }
-
-        const updated = await productService.updateProduct(req.params.id, req.body)
-        res.json(updated)
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-export const deleteProduct = async (req, res) => {
-    try {
-        const product = await productService.getProductById(req.params.id)
-
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' })
-        }
-
-        if (req.user.role !== 'admin' && product.seller.toString() !== req.user.id) {
-            return res.status(403).json({ message: 'You are not allowed to delete this product' })
-        }
-
-        await productService.deleteProduct(req.params.id)
-
-        res.json({ message: 'Product deleted' })
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-// ... existing code ...
-
-export const getProducts = async (req, res) => {
-    try {
-        let products
-
-        if (req.user.role === 'seller') {
-            // Sellers only see their own products
-            products = await Product.find({ seller: req.user.id })
-        } else {
-            // Buyers and admins see all products
-            products = await Product.find()
-        }
-
         res.status(200).json({
             success: true,
-            count: products.length,
-            data: products
+            data: product
         })
+
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' })
+        res.status(500).json({ success: false, message: error.message })
     }
 }
-
-// ... existing code ...
 
 export const updateProduct = async (req, res) => {
     try {
@@ -183,5 +122,3 @@ export const deleteProduct = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' })
     }
 }
-
-// ... existing code ...
