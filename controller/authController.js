@@ -2,6 +2,7 @@ import config from '../config.js'
 import User from '../models/User.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { sendEmail } from '../services/emailService.js'
 
 const roles = ['seller', 'client', 'admin']
 
@@ -28,6 +29,8 @@ export const register = async (req, res) => {
             password: hashedPassword,
             role: role || 'client'
         })
+
+        //Sending an email for confiramation
 
         const token = jwt.sign(
             { id: user._id, role: user.role },
