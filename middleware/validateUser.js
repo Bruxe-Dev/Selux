@@ -19,5 +19,10 @@ export const validateUser = [
     body('role')
         .optional()
         .isIn(['seller', 'client', 'admin'])
-        .withMessage('Role must be one of seller, client, admin')
+        .withMessage('Role must be one of seller, client, admin'),
+
+    body('phone')
+        .optional()
+        .isString()
+        .withMessage('Phone must be a string')
 ]

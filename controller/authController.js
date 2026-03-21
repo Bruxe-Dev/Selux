@@ -122,7 +122,11 @@ export const login = async (req, res) => {
             })
         }
 
-        const user = await User.findOne({ email })
+        let user = await User.findOne({ email })
+
+        if (!user) {
+            user = await Seller.findOne({ email })
+        }
 
         if (!user) {
             return res.status(404).json({

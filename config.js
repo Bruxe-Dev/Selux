@@ -8,5 +8,6 @@ export default {
     jwt_expire: process.env.JWT_EXPIRE,
     email_user: process.env.EMAIL_USER,
     email_pass: process.env.EMAIL_PASS,
-    selux_email: process.env.SELUX_EMAIL
+    selux_email: process.env.SELUX_EMAIL,
+    base_url: process.env.BASE_URL || 'http://localhost:3000'
 }

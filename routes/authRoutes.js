@@ -40,6 +40,24 @@ router.post(
 
 /**
  * @swagger
+ * /api/auth/confirm-email:
+ *   get:
+ *     summary: Confirm email
+ *     description: Confirm user email to complete registration
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Email confirmed and user registered
+ */
+router.get('/confirm-email', authController.confirmEmail)
+
+/**
+ * @swagger
  * /api/auth/login:
  *   post:
  *     summary: Login user
