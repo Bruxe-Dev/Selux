@@ -11,6 +11,8 @@ const router = express.Router()
  *   post:
  *     summary: Register a new user
  *     description: Create a new user
+ *     tags:
+ *      -Authentication nad Authorization
  *     requestBody:
  *       required: true
  *       content:
