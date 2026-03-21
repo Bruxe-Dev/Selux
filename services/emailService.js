@@ -4,7 +4,7 @@ import config from '../config.js'
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: config.email_user,
+        user: config.selux_email,
         pass: config.email_pass
     }
 })
