@@ -7,5 +7,6 @@ export default {
     jwt_secret: process.env.JWT_SECRET,
     jwt_expire: process.env.JWT_EXPIRE,
     email_user: process.env.EMAIL_USER,
-    email_pass: process.env.EMAIL_PASS
+    email_pass: process.env.EMAIL_PASS,
+    selux_email: process.env.SELUX_EMAIL
 }
