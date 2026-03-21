@@ -1,58 +1,36 @@
-import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcryptjs";
-import jwt from 'jsonwebtoken'
+import mongoose from "mongoose"
 
 const sellerSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        trim: true,
-        minLength: [5, 'Name must not be less than 5 Characters']
+        required: true
     },
     email: {
         type: String,
-        required: [true, 'Please provide an email'],
-        unique: true,
-        lowercase: true,
-        trim: true,
-        match: [
-            /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-            'Please provide a valid email'
-        ]
-    },
-    phone: {
-        type: Number,
         required: true,
-        unique: true,
-        minLength: [10, 'Number must not be under 10 digits']
+        unique: true
     },
     password: {
         type: String,
-        unique: true,
-        trim: true,
-        required: [true, 'Paasword is Required']
+        required: true
     },
-    product: {
-        type: Schema.Types.ObjectId,
-        ref: Product
+    role: {
+        type: String,
+        enum: ["seller", "client", "admin"],
+        default: "seller"
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
+    phone: {
+        type: String,
+        required: false
     }
-},
-    {
-        timestamps: true
-    }
-)
+})
 
-sellerSchema.pre('save', async () => {
-    if (!this.isModified('password')) {
-        return
+export default mongoose.model("Seller", sellerSchema)
+return
     }
 
-    const salt = await bcrypt.genSalt(12)
-    this.password = bcrypt.hash(this.password, salt)
+const salt = await bcrypt.genSalt(12)
+this.password = bcrypt.hash(this.password, salt)
 })
 
 sellerSchema.methods.matchPassword = async function (inputPassword) {
