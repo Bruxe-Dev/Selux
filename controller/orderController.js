@@ -63,3 +63,41 @@ export const getMyOrders = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 }
+
+// ... existing code ...
+
+export const getMyOrders = async (req, res) => {
+    try {
+        let orders
+
+        if (req.user.role === 'client') {
+            // Buyers see only their orders
+            orders = await Order.find({ buyer: req.user.id })
+                .populate('product', 'name price')
+                .populate('seller', 'name email')
+        } else if (req.user.role === 'seller') {
+            // Sellers see orders for their products
+            const products = await Product.find({ seller: req.user.id }).select('_id')
+            const productIds = products.map(p => p._id)
+            orders = await Order.find({ product: { $in: productIds } })
+                .populate('product', 'name price')
+                .populate('buyer', 'name email')
+        } else {
+            // Admins see all orders
+            orders = await Order.find()
+                .populate('product', 'name price')
+                .populate('buyer', 'name email')
+                .populate('seller', 'name email')
+        }
+
+        res.status(200).json({
+            success: true,
+            count: orders.length,
+            data: orders
+        })
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' })
+    }
+}
+
+// ... existing code ...
