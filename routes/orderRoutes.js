@@ -10,7 +10,7 @@ const router = express.Router()
  * /api/orders:
  *   post:
  *     summary: Create an order
- *     description: Customer creates an order from a seller's product
+ *     description: Create a new order for a product (clients only)
  *     tags:
  *       - Orders
  *     requestBody:
@@ -26,16 +26,22 @@ const router = express.Router()
  *               productId:
  *                 type: string
  *                 example: 6657f1b8c12abf0034e1a123
+ *                 description: ID of the product to order
  *               quantity:
  *                 type: number
  *                 example: 2
+ *                 description: Quantity to order
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       201:
  *         description: Order created successfully
  *       400:
- *         description: Invalid input
+ *         description: Invalid input or insufficient stock
+ *       403:
+ *         description: Only clients can place orders
  *       401:
- *         description: Unauthorized
+ *         description: Authentication required
  */
 router.post('/', authenticate, authorizeRoles('client'), orderController.createOrder)
 
@@ -44,14 +50,18 @@ router.post('/', authenticate, authorizeRoles('client'), orderController.createO
  * /api/orders/my-orders:
  *   get:
  *     summary: Get logged-in user's orders
- *     description: Returns all orders placed by the authenticated user
+ *     description: Returns all orders based on user role (clients see their orders, sellers see orders for their products, admins see all)
  *     tags:
  *       - Orders
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of user's orders
  *       401:
- *         description: Unauthorized
+ *         description: Authentication required
+ *       403:
+ *         description: Insufficient permissions
  */
 router.get('/my-orders', authenticate, authorizeRoles('client', 'admin'), orderController.getMyOrders)
 
