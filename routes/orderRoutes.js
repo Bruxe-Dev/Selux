@@ -134,7 +134,6 @@ router.patch('/:id/location', authenticate, authorizeRoles('seller', 'admin'), c
 
 export default router
 
-// ... existing code ...
 
 /**
  * @swagger
