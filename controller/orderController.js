@@ -32,7 +32,13 @@ export const createOrder = async (req, res) => {
             product: productId,
             client: req.user.id,
             quantity,
-            totalPrice
+            totalPrice,
+            deliveryAddress: deliveryAddress || '',
+            deliveryCoordinates: deliveryCoordinates || null,
+            currentLocation: null,
+            distanceRemaining: null,
+            estimatedArrival: null,
+            trackingHistory: []
         })
 
         // Decrease stock quantity
