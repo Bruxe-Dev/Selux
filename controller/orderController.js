@@ -4,7 +4,7 @@ import { calculateDistance, estimateTimeRemaining } from '../services/trackingSe
 
 export const createOrder = async (req, res) => {
     try {
-        const { productId, quantity } = req.body
+        const { productId, quantity, deliveryAddress, deliveryCoordinates } = req.body
 
         if (!productId || !quantity) {
             return res.status(400).json({

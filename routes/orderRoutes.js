@@ -65,6 +65,73 @@ router.post('/', authenticate, authorizeRoles('client'), orderController.createO
  */
 router.get('/my-orders', authenticate, authorizeRoles('client', 'admin'), orderController.getMyOrders)
 
+/**
+ * @swagger
+ * /api/orders/{id}/tracking:
+ *   get:
+ *     summary: Get order tracking information
+ *     description: Retrieve current location, distance remaining and ETA for an order
+ *     tags:
+ *       - Orders
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Tracking data returned
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: Order not found
+ */
+router.get('/:id/tracking', authenticate, authorizeRoles('client', 'seller', 'admin'), checkOrderOwnership, orderController.getOrderTracking)
+
+/**
+ * @swagger
+ * /api/orders/{id}/location:
+ *   patch:
+ *     summary: Update order current location (internal/service)
+ *     description: Update GPS coordinates and recalculate ETA/distance
+ *     tags:
+ *       - Orders
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               lat:
+ *                 type: number
+ *               lng:
+ *                 type: number
+ *               status:
+ *                 type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Order location updated
+ *       403:
+ *         description: Access denied
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Order not found
+ */
+router.patch('/:id/location', authenticate, authorizeRoles('seller', 'admin'), checkOrderOwnership, orderController.updateOrderLocation)
+
 export default router
 
 // ... existing code ...
