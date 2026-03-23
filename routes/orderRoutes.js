@@ -120,5 +120,3 @@ router.get('/seller', authenticate, authorizeRoles('seller'), orderController.ge
  *         description: Access denied
  */
 router.patch('/:id/status', authenticate, checkOrderOwnership, orderController.updateOrderStatus)
-
-// ... existing code ...
