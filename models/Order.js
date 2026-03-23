@@ -23,10 +23,14 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-
     deliveryAddress: {
         type: String,
         required: false,
+    },
+
+    deliveryCoordinates: {
+        lat: { type: Number, required: false },
+        long: { type: Number, required: false }
     },
 
     status: {
