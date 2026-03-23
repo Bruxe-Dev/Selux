@@ -30,11 +30,11 @@ const orderSchema = new mongoose.Schema({
 
     deliveryCoordinates: {
         lat: { type: Number, required: false },
-        long: { type: Number, required: false }
+        lng: { type: Number, required: false }
     },
     currentLocation: {
         lat: { type: Number, required: false },
-        long: { type: Number, required: false }
+        lng: { type: Number, required: false }
     },
     estimatedArrival: {
         type: Date,

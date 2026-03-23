@@ -1,3 +1,5 @@
+import Order from '../models/Order.js'
+
 export const calculateDistance = (lat1, lng1, lat2, lng2) => {
     const R = 6371 // Earth's radius in km
     const dLat = (lat2 - lat1) * Math.PI / 180
