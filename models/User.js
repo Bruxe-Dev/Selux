@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["seller", "client", "admin"],
         default: "client"
+    },
+    phone: {
+        type: Number,
+        required: true
     }
 })
 
