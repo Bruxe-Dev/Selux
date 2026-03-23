@@ -91,7 +91,6 @@ export const getProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-        // Ownership check is now handled by middleware
         const product = req.product
 
         const updatedProduct = await Product.findByIdAndUpdate(
