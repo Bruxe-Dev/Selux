@@ -36,6 +36,26 @@ const orderSchema = new mongoose.Schema({
         lat: { type: Number, required: false },
         long: { type: Number, required: false }
     },
+    estimatedArrival: {
+        type: Date,
+        required: false
+    },
+    distanceRemaining: {
+        type: Number, // Distance in kilometers from current location to delivery
+        required: false
+    },
+
+    trackingHistory: [{
+        location: {
+            lat: Number,
+            lng: Number
+        },
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+        status: String // e.g., "Picked up", "In transit", "Out for delivery"
+    }],
 
     status: {
         type: String,
