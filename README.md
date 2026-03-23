@@ -1,4 +1,4 @@
-# Demo E-Commerce Platform
+# Selux E-Commerce Platform
 
 ## Overview
 
@@ -44,7 +44,7 @@ This is a comprehensive e-commerce platform built with Node.js and Express, desi
 - **Security**: bcrypt for password hashing
 - **Email Service**: Nodemailer
 - **Validation**: Express Validator
-- **API Documentation**: Swagger/OpenAPI
+- **API Documentation**: Swagger
 - **Development**: Nodemon for hot reloading
 
 ## Installation
