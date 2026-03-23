@@ -32,6 +32,10 @@ const orderSchema = new mongoose.Schema({
         lat: { type: Number, required: false },
         long: { type: Number, required: false }
     },
+    currentLocation: {
+        lat: { type: Number, required: false },
+        long: { type: Number, required: false }
+    },
 
     status: {
         type: String,
