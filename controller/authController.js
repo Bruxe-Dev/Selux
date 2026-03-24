@@ -57,6 +57,19 @@ export const confirmEmail = async (req, res) => {
         const { token } = req.query
 
         if (!token) {
+            const isBrowser = req.headers.accept && req.headers.accept.includes('text/html')
+            if (isBrowser) {
+                return res.status(400).send(`
+                    <html>
+                    <head><title>Email Confirmation Error</title></head>
+                    <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                        <h1 style="color: #e74c3c;">Confirmation Error</h1>
+                        <p>Token is required. Please check your email for the correct confirmation link.</p>
+                        <a href="/" style="color: #3498db;">Go to Homepage</a>
+                    </body>
+                    </html>
+                `)
+            }
             return res.status(400).json({ success: false, message: 'Token is required' })
         }
 
@@ -68,6 +81,19 @@ export const confirmEmail = async (req, res) => {
         const existingUser = role === 'seller' ? await Seller.findOne({ email }) : await User.findOne({ email })
 
         if (existingUser) {
+            const isBrowser = req.headers.accept && req.headers.accept.includes('text/html')
+            if (isBrowser) {
+                return res.status(400).send(`
+                    <html>
+                    <head><title>Email Already Confirmed</title></head>
+                    <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                        <h1 style="color: #f39c12;">Email Already Confirmed</h1>
+                        <p>This email has already been confirmed. You can now log in to your account.</p>
+                        <a href="/" style="color: #3498db;">Go to Login</a>
+                    </body>
+                    </html>
+                `)
+            }
             return res.status(400).json({ success: false, message: 'User already exists' })
         }
 
@@ -95,6 +121,21 @@ export const confirmEmail = async (req, res) => {
             { expiresIn: config.jwt_expire || '1d' }
         )
 
+        const isBrowser = req.headers.accept && req.headers.accept.includes('text/html')
+        if (isBrowser) {
+            return res.status(201).send(`
+                <html>
+                <head><title>Email Confirmed Successfully</title></head>
+                <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                    <h1 style="color: #27ae60;">Email Confirmed Successfully!</h1>
+                    <p>Welcome ${name}! Your email has been confirmed and your account is now active.</p>
+                    <p>You can now log in to your account.</p>
+                    <a href="/" style="color: #3498db;">Go to Login</a>
+                </body>
+                </html>
+            `)
+        }
+
         res.status(201).json({
             success: true,
             message: 'Email confirmed and user registered successfully',
@@ -103,10 +144,39 @@ export const confirmEmail = async (req, res) => {
         })
 
     } catch (error) {
+        const isBrowser = req.headers.accept && req.headers.accept.includes('text/html')
+
         if (error.name === 'TokenExpiredError') {
+            if (isBrowser) {
+                return res.status(400).send(`
+                    <html>
+                    <head><title>Confirmation Link Expired</title></head>
+                    <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                        <h1 style="color: #e74c3c;">Confirmation Link Expired</h1>
+                        <p>This confirmation link has expired. Please register again to receive a new confirmation email.</p>
+                        <a href="/" style="color: #3498db;">Register Again</a>
+                    </body>
+                    </html>
+                `)
+            }
             return res.status(400).json({ success: false, message: 'Confirmation link has expired' })
         }
+
         console.log(error)
+
+        if (isBrowser) {
+            return res.status(500).send(`
+                <html>
+                <head><title>Server Error</title></head>
+                <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                    <h1 style="color: #e74c3c;">Server Error</h1>
+                    <p>Something went wrong. Please try again later.</p>
+                    <a href="/" style="color: #3498db;">Go to Homepage</a>
+                </body>
+                </html>
+            `)
+        }
+
         res.status(500).json({ success: false, message: 'Server error' })
     }
 }
