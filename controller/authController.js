@@ -162,6 +162,22 @@ export const confirmEmail = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Confirmation link has expired' })
         }
 
+        if (error.name === 'JsonWebTokenError') {
+            if (isBrowser) {
+                return res.status(400).send(`
+                    <html>
+                    <head><title>Invalid Confirmation Token</title></head>
+                    <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+                        <h1 style="color: #e74c3c;">Invalid Confirmation Token</h1>
+                        <p>The confirmation link is not valid. Please request a new confirmation email.</p>
+                        <a href="/" style="color: #3498db;">Try Again</a>
+                    </body>
+                    </html>
+                `)
+            }
+            return res.status(400).json({ success: false, message: 'Invalid confirmation token' })
+        }
+
         console.log(error)
 
         if (isBrowser) {
