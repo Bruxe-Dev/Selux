@@ -30,7 +30,7 @@ export const register = async (req, res) => {
             { expiresIn: '1h' }
         )
 
-        const confirmationLink = `${config.ngrok_url}/api/auth/confirm-email?token=${confirmationToken}`
+        const confirmationLink = `${config.base_url}/api/auth/confirm-email?token=${confirmationToken}`
 
         await sendEmail(
             email,
