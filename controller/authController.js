@@ -3,6 +3,7 @@ import User from '../models/User.js'
 import Seller from '../models/Seller.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import RevokedToken from '../models/RevokedToken.js'
 import { sendEmail } from '../services/emailService.js'
 
 const roles = ['seller', 'client', 'admin']

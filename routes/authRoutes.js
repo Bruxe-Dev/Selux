@@ -115,6 +115,8 @@ router.post('/login', authController.login)
  *       200:
  *         description: Logout successful
  */
-router.post('/logout', authController.logout)
+import { authenticate } from '../middleware/authMiddleware.js'
+
+router.post('/logout', authenticate, authController.logout)
 
 export default router
