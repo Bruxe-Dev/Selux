@@ -248,10 +248,30 @@ export const login = async (req, res) => {
     }
 }
 
-export const logout = (req, res) => {
-    // JWT stateless: logout is client-side token discard. Here we return a standard response.
-    return res.status(200).json({
-        success: true,
-        message: 'Logout successful. Please remove the token on the client side.'
-    })
+export const logout = async (req, res) => {
+    const authHeader = req.headers.authorization
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ success: false, message: 'No token provided' })
+    }
+
+    const token = authHeader.split(' ')[1]
+
+    try {
+        const decoded = jwt.verify(token, config.jwt_secret)
+
+        // Already revoked check is optional (duplicate safe)
+        const existing = await RevokedToken.findOne({ token })
+        if (existing) {
+            return res.status(200).json({ success: true, message: 'Already logged out' })
+        }
+
+        const expiresAt = decoded.exp ? new Date(decoded.exp * 1000) : new Date(Date.now() + 24 * 60 * 60 * 1000)
+
+        await RevokedToken.create({ token, expiresAt })
+
+        return res.status(200).json({ success: true, message: 'Logout successful - token has been revoked' })
+    } catch (error) {
+        return res.status(401).json({ success: false, message: 'Invalid or expired token' })
+    }
 }
