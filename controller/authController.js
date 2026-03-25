@@ -111,7 +111,8 @@ export const confirmEmail = async (req, res) => {
                 name,
                 email,
                 password,
-                role
+                role,
+                phone
             })
         }
 

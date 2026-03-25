@@ -88,7 +88,8 @@ export const updateUserRole = async (req, res) => {
                 name: seller.name,
                 email: seller.email,
                 password: seller.password,
-                role: newRole
+                role: newRole,
+                phone: seller.phone
             })
 
             // Delete from Seller collection
