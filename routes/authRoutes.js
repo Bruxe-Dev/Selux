@@ -2,6 +2,7 @@ import express from 'express'
 import * as authController from '../controller/authController.js'
 import { validateUser } from '../middleware/validateUser.js'
 import { handleValidationErrors } from '../middleware/handleValidation.js'
+import { authenticate } from '../middleware/authMiddleware.js'
 
 const router = express.Router()
 
