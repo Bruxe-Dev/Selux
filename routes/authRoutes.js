@@ -103,4 +103,18 @@ router.get('/confirm-email', authController.confirmEmail)
  */
 router.post('/login', authController.login)
 
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     description: Instruct client to discard JWT (stateless) and end session
+ *     tags:
+ *      - Authentication & Authorization
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ */
+router.post('/logout', authController.logout)
+
 export default router
