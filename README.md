@@ -93,7 +93,7 @@ Once the server is running, you can access:
 - `GET /api/orders` - Get user's orders
 - `POST /api/orders` - Create a new order
 - `GET /api/orders/:id` - Get order details
-- `PUT /api/orders/:id` - Update order status (admin/seller only)
+- `PATCH /api/orders/:id` - Update order status (admin/seller only)
 
 #### Admin
 - `GET /api/admin/users` - List all users
