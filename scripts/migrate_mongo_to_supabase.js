@@ -68,4 +68,4 @@ import User from '../models/User.js';
 
     console.log('Migration complete');
     process.exit(0);
-})
+})();
