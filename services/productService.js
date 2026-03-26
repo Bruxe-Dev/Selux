@@ -24,6 +24,16 @@ export const getProductById = async (id) => {
     return data;
 };
 
+export const getProductByName = async (name) => {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*, seller:users(name,email,role)')
+        .ilike('name', `%${name}%`)
+        .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+};
+
 export const createProduct = async (payload) => {
     const { data, error } = await supabase.from('products').insert(payload).single();
     if (error) throw error;

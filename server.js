@@ -1,10 +1,7 @@
 import config from './config.js'
 import app from './app.js'
-import dbConnect from './config/database.js'
 import swaggeruiexpress from 'swagger-ui-express'
 import swaggerSpec from './swagger.js'
-
-dbConnect()
 
 app.use('/api/docs', swaggeruiexpress.serve, swaggeruiexpress.setup(swaggerSpec))
 

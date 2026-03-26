@@ -1,61 +1,47 @@
-import Product from '../models/Product.js'
-import Order from '../models/Order.js'
+import * as productService from '../services/productService.js';
+import * as orderService from '../services/orderService.js';
 
 export const checkProductOwnership = async (req, res, next) => {
     try {
-        const product = await Product.findById(req.params.id)
+        const product = await productService.getProductById(req.params.id);
 
         if (!product) {
-            return res.status(404).json({ success: false, message: "No Products found" })
+            return res.status(404).json({ success: false, message: 'No product found' });
         }
 
-        //Check if products really exlist to the seller
-
-        if (product.seller.toString() !== req.user.id) {
-            return res.status(403).json({
-                success: false,
-                message: "NO AUTHORIZATION"
-            })
+        if (product.seller_id !== req.user.id) {
+            return res.status(403).json({ success: false, message: 'NO AUTHORIZATION' });
         }
 
         req.product = product;
-        next()
+        next();
     } catch (err) {
-        res.status(500).json({ success: false, message: 'Server error' })
+        res.status(500).json({ success: false, message: 'Server error' });
     }
-}
-
+};
 
 export const checkOrderOwnership = async (req, res, next) => {
     try {
-        const order = await Order.findById(req.params.id).populate('client')
+        const order = await orderService.getOrder(req.params.id);
 
         if (!order) {
-            return res.status(404).json({ success: false, message: 'Order not found' })
+            return res.status(404).json({ success: false, message: 'Order not found' });
         }
 
-        // Buyers can only access their own orders
-        if (req.user.role === 'client' && order.client.toString() !== req.user.id) {
-            return res.status(403).json({
-                success: false,
-                message: 'NOT AUTHORIZED'
-            })
+        if (req.user.role === 'client' && order.client_id !== req.user.id) {
+            return res.status(403).json({ success: false, message: 'NOT AUTHORIZED' });
         }
 
-        // Sellers can only access orders for their products
         if (req.user.role === 'seller') {
-            const product = await Product.findById(order.product)
-            if (product.seller.toString() !== req.user.id) {
-                return res.status(403).json({
-                    success: false,
-                    message: 'NO AUTHORIZATION'
-                })
+            const product = await productService.getProductById(order.product_id);
+            if (!product || product.seller_id !== req.user.id) {
+                return res.status(403).json({ success: false, message: 'NO AUTHORIZATION' });
             }
         }
 
-        req.order = order
-        next()
+        req.order = order;
+        next();
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' })
+        res.status(500).json({ success: false, message: 'Server error' });
     }
-}
+};
