@@ -20,8 +20,9 @@ export const register = async (req, res) => {
             return res.status(400).json({ success: false, message: 'User already exists' })
         }
 
+        const hashedPassword = await bcrypt.hash(password, 10)
         const confirmationToken = jwt.sign(
-            { name, email, password, role, phone },
+            { name, email, password: hashedPassword, role, phone },
             config.jwt_secret,
             { expiresIn: '1h' }
         )
