@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import supabase from '../config/supabase.js'
+import supabase from '../config/database.js'
 import config from '../config.js'
 import Product from "../models/Product.js";
 import Order from '../models/Order.js';

@@ -1,4 +1,4 @@
-import supabase from '../config/supabase.js';
+import supabase from '../config/database.js';
 
 export const createOrder = async (payload) => {
     const { data, error } = await supabase.from('orders').insert(payload).single();

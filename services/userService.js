@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import supabase from '../config/supabase.js';
+import supabase from '../config/database.js';
 
 export const createUser = async ({ name, email, password, role = 'client', phone }) => {
     const hashed = await bcrypt.hash(password, 10);

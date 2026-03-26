@@ -1,4 +1,4 @@
-import supabase from '../config/supabase.js';
+import supabase from '../config/database.js';
 
 export const listProducts = async (filters = {}) => {
     let query = supabase.from('products').select(`
