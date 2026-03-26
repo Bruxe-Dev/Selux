@@ -5,4 +5,4 @@ const supabase = createClient(
     config.supabase_url,
     config.supabase_anon_key
 )
-export default dbConnect
+export default supabase;
