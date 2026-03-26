@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
-import RevokedToken from '../models/RevokedToken.js'
+import * as revokedTokenService from '../services/revokedTokenService.js'
 
 export const authenticate = async (req, res, next) => {
     const authHeader = req.headers.authorization
@@ -12,8 +12,7 @@ export const authenticate = async (req, res, next) => {
     const token = authHeader.split(' ')[1]
 
     try {
-        // Check blacklist
-        const isRevoked = await RevokedToken.findOne({ token })
+        const isRevoked = await revokedTokenService.isTokenRevoked(token)
         if (isRevoked) {
             return res.status(401).json({ message: 'Token has been revoked, please log in again' })
         }

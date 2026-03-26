@@ -1,11 +1,17 @@
 import bcrypt from 'bcryptjs';
 import supabase from '../config/database.js';
 
-export const createUser = async ({ name, email, password, role = 'client', phone }) => {
-    const hashed = await bcrypt.hash(password, 10);
+export const createUser = async ({ name, email, password, role = 'client', phone }, options = { skipHash: false }) => {
+    const finalPassword = options.skipHash ? password : await bcrypt.hash(password, 10);
+
     const { data, error } = await supabase.from('users').insert({
-        name, email, password: hashed, role, phone
+        name,
+        email,
+        password: finalPassword,
+        role,
+        phone
     }).single();
+
     if (error) throw error;
     return data;
 };

@@ -34,6 +34,25 @@ export const listOrdersByClient = async (clientId) => {
     return data;
 };
 
+export const listOrdersForSeller = async (sellerId) => {
+    const { data, error } = await supabase.rpc('orders_by_seller', { seller_id: sellerId });
+    if (error) throw error;
+    return data;
+};
+
+export const listAllOrders = async () => {
+    const { data, error } = await supabase
+        .from('orders')
+        .select(`
+      *,
+      product:products(name,price,seller_id),
+      client:users(name,email)
+    `)
+        .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+};
+
 export const updateOrderStatus = async (id, status, trackingUpdate) => {
     const payload = { status, updated_at: new Date().toISOString() };
     if (trackingUpdate) payload.tracking_history = supabase.raw(`
