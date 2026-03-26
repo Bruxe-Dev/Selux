@@ -1,48 +1,47 @@
-import Product from '../models/Product.js'
-import express from 'express'
+import supabase from '../config/supabase.js';
 
-export const getProducts = async () => {
-    return await Product.find()
-}
+export const listProducts = async (filters = {}) => {
+    let query = supabase.from('products').select(`
+    *,
+    seller:users(name,email,role)
+  `);
 
-export const getProductsBySeller = async (sellerId) => {
-    return await Product.find({ seller: sellerId })
-}
+    if (filters.seller_id) query = query.eq('seller_id', filters.seller_id);
+    if (filters.in_stock !== undefined) query = query.eq('in_stock', filters.in_stock);
 
-export const createProducts = async (data) => {
-    const product = data
-
-    if (!product) {
-        return {
-            "sucess": false,
-            "message": "No product data given"
-        }
-    }
-
-    return await Product.create(product)
-}
+    const { data, error } = await query.order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+};
 
 export const getProductById = async (id) => {
-    return await Product.findById(id)
-}
+    const { data, error } = await supabase
+        .from('products')
+        .select('*, seller:users(name,email,role)')
+        .eq('id', id)
+        .single();
+    if (error) throw error;
+    return data;
+};
 
-export const getProductByName = async (name) => {
-    if (!name) {
-        throw new Error('No product name given')
-    }
+export const createProduct = async (payload) => {
+    const { data, error } = await supabase.from('products').insert(payload).single();
+    if (error) throw error;
+    return data;
+};
 
-    const productInfo = await Product.findOne({ name: new RegExp(name, 'i') })
-
-    if (!productInfo) {
-        throw new Error('Product not found')
-    }
-
-    return productInfo
-}
-export const updateProduct = async (id, data) => {
-    return await Product.findByIdAndUpdate(id, data, { new: true })
-}
+export const updateProduct = async (id, payload) => {
+    const { data, error } = await supabase
+        .from('products')
+        .update({ ...payload, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .single();
+    if (error) throw error;
+    return data;
+};
 
 export const deleteProduct = async (id) => {
-    return await Product.findByIdAndDelete(id,)
-}
+    const { data, error } = await supabase.from('products').delete().eq('id', id).single();
+    if (error) throw error;
+    return data;
+};
