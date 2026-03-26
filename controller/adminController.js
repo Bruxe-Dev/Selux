@@ -1,19 +1,17 @@
-import User from '../models/User.js'
-import Seller from '../models/Seller.js'
-import Order from '../models/Order.js'
-import Product from '../models/Product.js'
+import * as userService from '../services/userService.js'
+import * as orderServices from '../services/orderServices.js'
 
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find({}, '-password')
-        const sellers = await Seller.find({}, '-password')
+        const { data: users, error } = await userService.getAllUsers();
+        if (error) throw error;
 
         res.status(200).json({
             success: true,
             data: {
                 buyers: users.filter(user => user.role === 'client'),
                 admins: users.filter(user => user.role === 'admin'),
-                sellers: sellers
+                sellers: users.filter(user => user.role === 'seller')
             }
         })
     } catch (error) {
@@ -23,15 +21,8 @@ export const getAllUsers = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find()
-            .populate('buyer', 'name email')
-            .populate('product', 'name price')
-            .populate('seller', 'name email')
-
-        res.status(200).json({
-            success: true,
-            data: orders
-        })
+        const orders = await orderServices.listAllOrders();
+        res.status(200).json({ success: true, data: orders })
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' })
     }
@@ -39,23 +30,14 @@ export const getAllOrders = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
     try {
-        const { id, type } = req.params
+        const { id } = req.params
 
-        let user
-        if (type === 'seller') {
-            user = await Seller.findByIdAndDelete(id)
-        } else {
-            user = await User.findByIdAndDelete(id)
-        }
-
+        const user = await userService.deleteUserById(id)
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' })
         }
 
-        res.status(200).json({
-            success: true,
-            message: 'User deleted successfully'
-        })
+        res.status(200).json({ success: true, message: 'User deleted successfully' })
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' })
     }
@@ -63,49 +45,20 @@ export const deleteUser = async (req, res) => {
 
 export const updateUserRole = async (req, res) => {
     try {
-        const { id, type } = req.params
+        const { id } = req.params
         const { newRole } = req.body
 
         const allowedRoles = ['client', 'admin']
-
         if (!allowedRoles.includes(newRole)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid role. Must be client or admin'
-            })
+            return res.status(400).json({ success: false, message: 'Invalid role. Must be client or admin' })
         }
 
-        let user
-        if (type === 'seller') {
-            // If changing from seller to client/admin, move to User collection
-            const seller = await Seller.findById(id)
-            if (!seller) {
-                return res.status(404).json({ success: false, message: 'Seller not found' })
-            }
-
-            // Create user in User collection
-            user = await User.create({
-                name: seller.name,
-                email: seller.email,
-                password: seller.password,
-                role: newRole,
-                phone: seller.phone
-            })
-
-            // Delete from Seller collection
-            await Seller.findByIdAndDelete(id)
-        } else {
-            user = await User.findByIdAndUpdate(
-                id,
-                { role: newRole },
-                { new: true }
-            ).select('-password')
+        const updatedUser = await userService.updateUserRole(id, newRole)
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: 'User not found' })
         }
 
-        res.status(200).json({
-            success: true,
-            data: user
-        })
+        res.status(200).json({ success: true, data: updatedUser })
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error' })
     }

@@ -22,4 +22,22 @@ export const getUserByEmail = async (email) => {
     return data;
 };
 
+export const getAllUsers = async () => {
+    const { data, error } = await supabase.from('users').select('id,name,email,role,phone');
+    if (error) throw error;
+    return data;
+};
+
+export const deleteUserById = async (id) => {
+    const { data, error } = await supabase.from('users').delete().eq('id', id).single();
+    if (error) throw error;
+    return data;
+};
+
+export const updateUserRole = async (id, newRole) => {
+    const { data, error } = await supabase.from('users').update({ role: newRole }).eq('id', id).single();
+    if (error) throw error;
+    return data;
+};
+
 export const verifyPassword = async (plain, hash) => bcrypt.compare(plain, hash);

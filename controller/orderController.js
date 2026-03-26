@@ -1,5 +1,5 @@
-import Order from '../models/Order.js'
-import Product from '../models/Product.js'
+import * as orderServices from '../services/orderServices.js'
+import * as productService from '../services/productService.js'
 import { calculateDistance, estimateTimeRemaining } from '../services/trackingServices.js'
 
 export const createOrder = async (req, res) => {
@@ -7,50 +7,43 @@ export const createOrder = async (req, res) => {
         const { productId, quantity, deliveryAddress, deliveryCoordinates } = req.body
 
         if (!productId || !quantity) {
-            return res.status(400).json({
-                success: false,
-                message: 'ProductId and quantity are required'
-            })
-        }
-
-        const product = await Product.findById(productId)
-
-        if (!product || product.quantity < quantity) {
-            return res.status(404).json({
-                success: false,
-                message: 'Product not found or insufficient quantity'
-            })
+            return res.status(400).json({ success: false, message: 'ProductId and quantity are required' })
         }
 
         if (!req.user || req.user.role !== 'client') {
             return res.status(403).json({ success: false, message: 'Only buyers can place orders' })
         }
 
-        const totalPrice = product.price * quantity
+        const product = await productService.getProductById(productId)
+        if (!product || product.quantity < quantity) {
+            return res.status(404).json({ success: false, message: 'Product not found or insufficient quantity' })
+        }
 
-        const order = await Order.create({
-            product: productId,
-            client: req.user.id,
+        const totalPrice = Number(product.price) * quantity
+
+        const order = await orderServices.createOrder({
+            product_id: productId,
+            client_id: req.user.id,
             quantity,
-            totalPrice,
-            deliveryAddress: deliveryAddress || '',
-            deliveryCoordinates: deliveryCoordinates || null,
-            currentLocation: null,
-            distanceRemaining: null,
-            estimatedArrival: null,
-            trackingHistory: []
+            total_price: totalPrice,
+            delivery_address: deliveryAddress || '',
+            delivery_coordinates: deliveryCoordinates || null,
+            current_lat: null,
+            current_lng: null,
+            estimated_arrival: null,
+            distance_remaining: null,
+            tracking_history: [],
+            status: 'pending'
         })
 
-        // Decrease stock quantity
-        product.quantity -= quantity
-        if (product.quantity === 0) product.inStock = false
-        await product.save()
-
-        res.status(201).json({
-            success: true,
-            order
+        await productService.updateProduct(productId, {
+            quantity: product.quantity - quantity,
+            in_stock: product.quantity - quantity > 0
         })
-    } catch (err) {
+
+        return res.status(201).json({ success: true, order })
+    } catch (error) {
+        console.error(error)
         return res.status(500).json({ success: false, message: 'Internal Server error' })
     }
 }
@@ -60,76 +53,56 @@ export const getMyOrders = async (req, res) => {
         let orders
 
         if (req.user.role === 'client') {
-            // Buyers see only their orders
-            orders = await Order.find({ client: req.user.id })
-                .populate('product', 'name price')
-                .sort({ createdAt: -1 })
+            orders = await orderServices.listOrdersByClient(req.user.id)
         } else if (req.user.role === 'seller') {
-            // Sellers see orders for their products
-            const products = await Product.find({ seller: req.user.id }).select('_id')
-            const productIds = products.map(p => p._id)
-            orders = await Order.find({ product: { $in: productIds } })
-                .populate('product', 'name price')
-                .populate('client', 'name email')
-                .sort({ createdAt: -1 })
+            // seller-specific SQL function can resolve this in supabase
+            orders = await orderServices.listOrdersForSeller(req.user.id)
         } else {
-            // Admins see all orders
-            orders = await Order.find()
-                .populate('product', 'name price')
-                .populate('client', 'name email')
-                .sort({ createdAt: -1 })
+            orders = await orderServices.listAllOrders()
         }
 
-        res.status(200).json({
-            success: true,
-            count: orders.length,
-            data: orders
-        })
+        return res.status(200).json({ success: true, count: orders.length, data: orders })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' })
+        console.error(error)
+        return res.status(500).json({ success: false, message: 'Server error' })
     }
 }
 
 export const getOrderTracking = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id)
-            .populate('product', 'name price')
-            .populate('client', 'name email')
-
+        const order = await orderServices.getOrder(req.params.id)
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' })
         }
 
-        // Only client or seller/admin can view via checkOrderOwnership middleware
-        // Distance/time fields are updated dynamically
-        if (order.deliveryCoordinates?.lat != null && order.deliveryCoordinates?.lng != null && order.currentLocation?.lat != null && order.currentLocation?.lng != null) {
-            order.distanceRemaining = calculateDistance(
-                order.currentLocation.lat,
-                order.currentLocation.lng,
-                order.deliveryCoordinates.lat,
-                order.deliveryCoordinates.lng
-            )
+        if (order.delivery_coordinates?.lat != null && order.delivery_coordinates?.lng != null && order.current_lat != null && order.current_lng != null) {
+            const distanceRemaining = calculateDistance(order.current_lat, order.current_lng, order.delivery_coordinates.lat, order.delivery_coordinates.lng)
+            const estimatedArrival = new Date(Date.now() + estimateTimeRemaining(distanceRemaining) * 60 * 1000)
 
-            const remainingMin = estimateTimeRemaining(order.distanceRemaining)
-            order.estimatedArrival = new Date(Date.now() + remainingMin * 60 * 1000)
+            await orderServices.updateOrder(order.id, {
+                distance_remaining: distanceRemaining,
+                estimated_arrival: estimatedArrival
+            })
+
+            order.distance_remaining = distanceRemaining
+            order.estimated_arrival = estimatedArrival
         }
-
-        await order.save()
 
         return res.status(200).json({
             success: true,
             tracking: {
-                orderId: order._id,
+                orderId: order.id,
                 status: order.status,
-                deliveryAddress: order.deliveryAddress,
-                currentLocation: order.currentLocation,
-                distanceRemaining: order.distanceRemaining,
-                timeRemainingMinutes: order.distanceRemaining ? estimateTimeRemaining(order.distanceRemaining) : 0,
-                estimatedArrival: order.estimatedArrival,
-                trackingHistory: order.trackingHistory
+                deliveryAddress: order.delivery_address,
+                currentLocation: { lat: order.current_lat, lng: order.current_lng },
+                distanceRemaining: order.distance_remaining,
+                timeRemainingMinutes: order.distance_remaining ? estimateTimeRemaining(order.distance_remaining) : 0,
+                estimatedArrival: order.estimated_arrival,
+                trackingHistory: order.tracking_history
             }
         })
     } catch (error) {
+        console.error(error)
         return res.status(500).json({ success: false, message: 'Server error' })
     }
 }
@@ -137,69 +110,47 @@ export const getOrderTracking = async (req, res) => {
 export const updateOrderLocation = async (req, res) => {
     try {
         const { lat, lng, status } = req.body
-
         if (lat == null || lng == null) {
             return res.status(400).json({ success: false, message: 'lat and lng are required' })
         }
 
-        const order = req.order
-
+        const order = await orderServices.getOrder(req.params.id)
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' })
         }
 
-        order.currentLocation = { lat, lng }
+        const updatedPayload = {
+            current_lat: lat,
+            current_lng: lng,
+            tracking_history: [...(order.tracking_history || []), { location: { lat, lng }, status: status || order.status || 'In transit', timestamp: new Date() }]
+        }
 
-        if (order.deliveryCoordinates?.lat != null && order.deliveryCoordinates?.lng != null) {
-            order.distanceRemaining = calculateDistance(
-                lat,
-                lng,
-                order.deliveryCoordinates.lat,
-                order.deliveryCoordinates.lng
-            )
-
-            const remainingMin = estimateTimeRemaining(order.distanceRemaining)
-            order.estimatedArrival = new Date(Date.now() + remainingMin * 60 * 1000)
+        if (order.delivery_coordinates?.lat != null && order.delivery_coordinates?.lng != null) {
+            const distanceRemaining = calculateDistance(lat, lng, order.delivery_coordinates.lat, order.delivery_coordinates.lng)
+            const estimatedArrival = new Date(Date.now() + estimateTimeRemaining(distanceRemaining) * 60 * 1000)
+            updatedPayload.distance_remaining = distanceRemaining
+            updatedPayload.estimated_arrival = estimatedArrival
         }
 
         if (status) {
-            order.status = status
+            updatedPayload.status = status
         }
 
-        order.trackingHistory = order.trackingHistory || []
-        order.trackingHistory.push({
-            location: { lat, lng },
-            status: status || order.status || 'In transit',
-            timestamp: new Date()
-        })
-
-        await order.save()
-
-        return res.status(200).json({ success: true, data: order })
+        const updatedOrder = await orderServices.updateOrder(req.params.id, updatedPayload)
+        return res.status(200).json({ success: true, data: updatedOrder })
     } catch (error) {
+        console.error(error)
         return res.status(500).json({ success: false, message: 'Server error' })
     }
 }
 
 export const getSellerOrders = async (req, res) => {
     try {
-        // Get all products by this seller
-        const products = await Product.find({ seller: req.user.id }).select('_id')
-        const productIds = products.map(p => p._id)
-
-        // Get all orders for these products
-        const orders = await Order.find({ product: { $in: productIds } })
-            .populate('product', 'name price')
-            .populate('client', 'name email')
-            .sort({ createdAt: -1 })
-
-        res.status(200).json({
-            success: true,
-            count: orders.length,
-            data: orders
-        })
+        const orders = await orderServices.listOrdersForSeller(req.user.id)
+        return res.status(200).json({ success: true, count: orders.length, data: orders })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' })
+        console.error(error)
+        return res.status(500).json({ success: false, message: 'Server error' })
     }
 }
 
@@ -209,23 +160,13 @@ export const updateOrderStatus = async (req, res) => {
         const validStatuses = ['pending', 'confirmed', 'shipped', 'delivered']
 
         if (!validStatuses.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid status. Must be one of: ' + validStatuses.join(', ')
-            })
+            return res.status(400).json({ success: false, message: 'Invalid status. Must be one of: ' + validStatuses.join(', ') })
         }
 
-        // Ownership check is handled by middleware
-        const order = req.order
-
-        order.status = status
-        await order.save()
-
-        res.status(200).json({
-            success: true,
-            data: order
-        })
+        const updated = await orderServices.updateOrderStatus(req.params.id, status)
+        return res.status(200).json({ success: true, data: updated })
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' })
+        console.error(error)
+        return res.status(500).json({ success: false, message: 'Server error' })
     }
 }
