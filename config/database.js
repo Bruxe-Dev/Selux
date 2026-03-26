@@ -1,15 +1,8 @@
 import config from '../config.js'
-import mongoose from 'mongoose'
+import { createClient } from '@supabase/supabase-js'
 
-
-const dbConnect = async () => {
-    try {
-        await mongoose.connect(config.mongodb_uri)
-        console.log("Database Connected Sucessfully")
-    } catch (error) {
-        console.log("Failed to connect to database")
-        process.exit()
-    }
-}
-
+const supabase = createClient(
+    config.supabase_url,
+    config.supabase_anon_key
+)
 export default dbConnect
