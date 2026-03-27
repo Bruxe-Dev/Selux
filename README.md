@@ -146,7 +146,12 @@ EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_email_password
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
+
+> Critical: for create/update/delete operations on `users` (and other RLS-blocked tables) in the backend, use `SUPABASE_SERVICE_ROLE_KEY`.
 
 ## Contributing
 
