@@ -12,5 +12,6 @@ export default {
     base_url: process.env.BASE_URL || 'http://localhost:3000',
     ngrok_url: process.env.NGROK_URL,
     supabase_url: process.env.SUPABASE_URL,
-    supabase_anon_key: process.env.SUPABASE_KEY
+    supabase_anon_key: process.env.SUPABASE_KEY,
+    supabase_service_role_key: process.env.SUPABASE_SERVICE_ROLE_KEY
 }
