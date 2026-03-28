@@ -94,7 +94,7 @@ export const confirmEmail = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: `Welcome to Selux, ${user.name}! 🚀 Your account is now active.`,
+            message: `Welcome to Selux, ${user.name}! Your account is now active.`,
             next: 'You can now log in to your account.',
             login_url: `${config.base_url}/api/auth/login`,
             token: jwtToken,
