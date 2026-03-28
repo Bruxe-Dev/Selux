@@ -55,7 +55,12 @@ export const updateProduct = async (id, payload) => {
 };
 
 export const deleteProduct = async (id) => {
-    const { data, error } = await supabase.from('products').delete().eq('id', id).single();
+    const { data, error } = await supabase
+        .from('products')
+        .delete()
+        .select()
+        .eq('id', id)
+        .single();
     if (error) throw error;
     return data;
 };
