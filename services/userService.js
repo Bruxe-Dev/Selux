@@ -12,6 +12,10 @@ export const createUser = async ({ name, email, password, role = 'client', phone
         phone
     }).single();
 
+    const { data1, error1 } = await supabase.from('users').select({
+        name, email, password: finalPassword, role, phone
+    }).select().single();
+
     if (error) throw error;
     return data;
 };
