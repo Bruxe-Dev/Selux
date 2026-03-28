@@ -10,11 +10,6 @@ export const uploadProductImage = async (fileBuffer, mimetype) => {
         throw new Error('Invalid mimetype')
     }
 
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
-    if (!allowedTypes.includes(mimetype)) {
-        throw new Error('Invalid file type')
-    }
-
     if (fileBuffer.length > 2 * 1024 * 1024) {
         throw new Error("Image too large. Kindly choose another image")
     }
