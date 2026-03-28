@@ -1,4 +1,5 @@
 import * as productService from '../services/productService.js';
+import { uploadProductImage } from '../services/uploadService.js';
 
 export const getProducts = async (req, res) => {
     try {
