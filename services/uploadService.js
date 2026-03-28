@@ -6,6 +6,11 @@ export const uploadProductImage = async (fileBuffer, mimetype) => {
     const extension = mimetype.split('/')[1]  // e.g. 'jpeg', 'png'
     const fileName = `${uuidv4()}.${extension}` // unique name e.g. abc-123.png
 
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
+    if (!allowedTypes.includes(mimetype)) {
+        throw new Error('Invalid file type')
+    }
+
     const { data, error } = await supabase.storage
         .from('product-images')
         .upload(fileName, fileBuffer, {
