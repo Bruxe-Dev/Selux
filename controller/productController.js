@@ -29,14 +29,37 @@ export const getProductByName = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
-
 export const createProduct = async (req, res) => {
     try {
-        const payload = { ...req.body, seller_id: req.user.id };
-        const product = await productService.createProduct(payload);
-        res.status(201).json({ success: true, product });
+        const { name, description, price, stock } = req.body
+
+        if (!name || !price) {
+            return res.status(400).json({ success: false, message: 'Name and price are required' })
+        }
+
+        let image_url = null
+        if (req.file) {
+            image_url = await uploadProductImage(req.file.buffer, req.file.mimetype)
+        }
+
+        const payload = {
+            name,
+            description,
+            price: parseFloat(price),
+            stock: parseInt(stock) || 0,
+            image_url,
+            seller_id: req.user.id
+        }
+
+        const product = await productService.createProduct(payload)
+
+        return res.status(201).json({
+            success: true,
+            message: `Product "${name}" created successfully!`,
+            product
+        })
     } catch (err) {
-        res.status(400).json({ success: false, message: err.message });
+        res.status(400).json({ success: false, message: err.message })
     }
 };
 
