@@ -35,7 +35,10 @@ export const getProductByName = async (name) => {
 };
 
 export const createProduct = async (payload) => {
-    const { data, error } = await supabase.from('products').insert(payload).single();
+    const { data, error } = await supabase.from('products')
+        .insert(payload)
+        .select()
+        .single();
     if (error) throw error;
     return data;
 };
@@ -45,6 +48,7 @@ export const updateProduct = async (id, payload) => {
         .from('products')
         .update({ ...payload, updated_at: new Date().toISOString() })
         .eq('id', id)
+        .select()
         .single();
     if (error) throw error;
     return data;
