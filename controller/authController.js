@@ -50,7 +50,11 @@ export const register = async (req, res) => {
     `
         )
 
-        return res.status(200).json({ success: true, message: 'Registration initiated. Please check your email to confirm.' })
+        return res.status(200).json({
+            success: true,
+            message: `Hi ${name}! 🎉 We've sent a configuration link to ${email}. Please check your inbox to activate your account.`,
+            next: 'Check your email and click the confirmation link to complete registration.'
+        })
     } catch (error) {
 
         const message =
