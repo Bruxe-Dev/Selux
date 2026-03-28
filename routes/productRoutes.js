@@ -7,9 +7,20 @@ import {
     authorizeRoles
 } from '../middleware/authMiddleware.js'
 import { checkProductOwnership } from '../middleware/ownershipMiddleware.js'
+import multer from 'multer'
 
 const router = express.Router()
 
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: (req, file, cb) => {
+        const allowed = ['image/jpeg', 'image/png', 'image/webp']
+        allowed.includes(file.mimetype)
+            ? cb(null, true)
+            : cb(new Error('Only JPEG, PNG and WebP allowed'))
+    }
+})
 /**
  * @swagger
  * /api/products:
