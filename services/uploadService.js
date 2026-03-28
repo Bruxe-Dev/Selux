@@ -6,6 +6,10 @@ export const uploadProductImage = async (fileBuffer, mimetype) => {
     const extension = mimetype.split('/')[1]  // e.g. 'jpeg', 'png'
     const fileName = `${uuidv4()}.${extension}` // unique name e.g. abc-123.png
 
+    if (!mimetype || !mimetype.includes(' / ')) {
+        throw new Error('Invalid mimetype')
+    }
+
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
     if (!allowedTypes.includes(mimetype)) {
         throw new Error('Invalid file type')
