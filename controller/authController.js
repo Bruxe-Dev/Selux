@@ -54,10 +54,7 @@ export const register = async (req, res) => {
     } catch (error) {
 
         const message =
-            'Server error'
-                `Try again later.
-                Sorry fo the Incinvinience our Team is hardly wotking on it`;
-        console.error(error)
+            console.error(error)
         return res.status(500).json({
             success: false, message
         })
