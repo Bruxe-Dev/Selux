@@ -73,6 +73,9 @@ export const confirmEmail = async (req, res) => {
 
         const user = await userService.createUser({ name, email, password, role, phone }, { skipHash: true })
 
+        if (!user) {
+            return res.status(500).json({ success: false, message: 'Failed to create User' })
+        }
         const jwtToken = jwt.sign(
             { id: user.id, role: user.role },
             config.jwt_secret,
