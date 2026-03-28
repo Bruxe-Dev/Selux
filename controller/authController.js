@@ -94,9 +94,16 @@ export const confirmEmail = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: 'Email confirmed and user registered successfully',
+            message: `Welcome to Selux, ${user.name}! 🚀 Your account is now active.`,
+            next: 'You can now log in to your account.',
+            login_url: `${config.base_url}/api/auth/login`,
             token: jwtToken,
-            user: { id: user.id, name: user.name, email: user.email, role: user.role }
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
         })
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
