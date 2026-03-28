@@ -43,8 +43,15 @@ export const register = async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Registration initiated. Please check your email to confirm.' })
     } catch (error) {
+
+        const message =
+            'Server error'
+                `Try again later.
+                Sorry fo the Incinvinience our Team is hardly wotking on it`;
         console.error(error)
-        return res.status(500).json({ success: false, message: 'Server error' })
+        return res.status(500).json({
+            success: false, message
+        })
     }
 }
 
