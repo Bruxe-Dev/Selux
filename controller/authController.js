@@ -31,14 +31,23 @@ export const register = async (req, res) => {
 
         await sendEmail(
             email,
-            'Confirm your email for Selux',
+            'Welcome to Selux — Confirm your email',
             `
-                <h2>Hello ${name}!</h2>
-                <p>Please confirm your email to complete your registration.</p>
-                <p>Click the link below to confirm:</p>
-                <a href="${confirmationLink}">Confirm Email</a>
-                <p>This link will expire in 1 hour.</p>
-            `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 32px; background: #f9f9f9; border-radius: 8px;">
+                <h1 style="color: #4F46E5;">Welcome to Selux 👋</h1>
+                <p style="font-size: 16px; color: #333;">Hi <strong>${name}</strong>, we're excited to have you on board!</p>
+                <p style="font-size: 15px; color: #555;">Please confirm your email address to activate your account.</p>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="${confirmationLink}"
+                    style="background-color: #4F46E5; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-size: 16px; font-weight: bold;">
+                    Confirm My Email
+                    </a>
+                </div>
+                <p style="font-size: 13px; color: #999;">This link expires in <strong>1 hour</strong>. If you didn't sign up, you can safely ignore this email.</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+                <p style="font-size: 12px; color: #bbb; text-align: center;">© ${new Date().getFullYear()} Selux. All rights reserved.</p>
+            </div>
+    `
         )
 
         return res.status(200).json({ success: true, message: 'Registration initiated. Please check your email to confirm.' })
