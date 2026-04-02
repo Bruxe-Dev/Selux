@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken'
 import { sendEmail } from '../services/emailService.js'
 import * as userService from '../services/userService.js'
 import * as revokedTokenService from '../services/revokedTokenService.js'
-import User from '../models/User.js'
 
 const roles = ['seller', 'client', 'admin']
 
