@@ -104,6 +104,7 @@ router.get('/confirm-email', authController.confirmEmail)
  */
 router.post('/login', authController.login)
 
+router.post('forgot-password', authController.forgotPassword)
 /**
  * @swagger
  * /api/auth/logout:

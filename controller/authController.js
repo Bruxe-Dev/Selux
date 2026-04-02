@@ -227,3 +227,39 @@ export const forgotPassword = async (req, res) => {
         console.error(err)
     }
 }
+
+export const resetPassword = async (req, res) => {
+    try {
+
+        const { token } = req.params
+        const { password } = req.body
+
+        // Hash incoming token
+        const hashedToken = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex")
+
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: Date.now() }
+        })
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired token" })
+        }
+
+        // Update password
+        user.password = await bcrypt.hash(password, 10)
+
+        user.resetPasswordToken = undefined
+        user.resetPasswordExpires = undefined
+
+        await user.save()
+
+        res.json({ message: "Password reset successful" })
+
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
