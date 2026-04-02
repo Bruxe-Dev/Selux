@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema({
     phone: {
         type: Number,
         required: false
+    },
+    passwordResetToken: {
+        type: String,
+        required: false
+    },
+    passwordResetTokenExpires: {
+        type: Date,
+        default: Date.now()
     }
 })
 
