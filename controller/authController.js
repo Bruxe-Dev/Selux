@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { sendEmail } from '../services/emailService.js'
 import * as userService from '../services/userService.js'
 import * as revokedTokenService from '../services/revokedTokenService.js'
+import User from '../models/User.js'
 
 const roles = ['seller', 'client', 'admin']
 
@@ -176,5 +177,53 @@ export const logout = async (req, res) => {
         return res.status(200).json({ success: true, message: 'Logout successful - token has been revoked' })
     } catch (error) {
         return res.status(401).json({ success: false, message: 'Invalid or expired token' })
+    }
+}
+
+export const forgotPassword = async (req, res) => {
+    try {
+        const email = req.body()
+        if (!email) { res.status(401).json({ success: false, message: "No Email provided" }) }
+
+        const user = await User.findOne({ email })
+        if (!user) { return res.status(404).json({ success: false, message: "User not found" }) }
+
+        const resetToken = await crypto.randomBytes(32).toString('hex')
+
+        const hashedToken = crypto
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex')
+
+        user.passwordResetToken = hashedToken
+        user.passwordResetTokenExpires = Date.now() + 15 * 60 * 1000 //15 Mins
+
+        await user.save()
+
+        const resetUrl = `https://localhost:3000/api/auth/reset-password/${resetToken}`
+
+        await sendEmail(
+            user.email,
+            "Password Reset"
+                `<div style="font-family:Arial, sans-serif; max-width:600px; margin:auto; padding: 32px; background: # #f9f9f9; border-radius: 8px ">
+                    <h1 style="color: #4f46e5;">Reset Password</h1>
+                    <div style="text-align: center; margin: 32px 0;">
+                        <a href="${confirmationLink}"
+                        style="background-color: #4F46E5; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-size: 16px; font-weight: bold;">
+                        Confirm My Email
+                    </a>
+                    </div>
+                    <p style="font-size: 13px; color: #999;">This link expires in <strong>15 mins</strong>. If you didn't request this Activity , Safely ignore this message</p>
+                    <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+                    <p style="font-size: 12px; color: #bbb; text-align: center;">© ${new Date().getFullYear()} Selux. All rights reserved.</p>
+                </div>
+                `
+        )
+
+        res.status(200).json({ success: true, message: "To reset your password please Check you Email" })
+
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Internal Server Error" })
+        console.error(err)
     }
 }
