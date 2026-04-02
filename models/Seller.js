@@ -22,6 +22,22 @@ const sellerSchema = new mongoose.Schema({
     phone: {
         type: String,
         required: false
+    },
+    shopName: String,
+    shopStatus: {
+        type: String,
+        enum: ["OPEN", "CLOSED"],
+        default: "CLOSED"
+    },
+    location: {
+        type: {
+            type: String,
+            enum: ["Point"],
+            default: "Point"
+        },
+        coordinates: {
+            type: [Number] // [longitude, latitude]
+        }
     }
 })
 
