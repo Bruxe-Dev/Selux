@@ -132,9 +132,6 @@ router.get('/:id/tracking', authenticate, authorizeRoles('client', 'seller', 'ad
  */
 router.patch('/:id/location', authenticate, authorizeRoles('seller', 'admin'), checkOrderOwnership, orderController.updateOrderLocation)
 
-export default router
-
-
 /**
  * @swagger
  * /api/orders/seller:
@@ -186,3 +183,5 @@ router.get('/seller', authenticate, authorizeRoles('seller'), orderController.ge
  *         description: Access denied
  */
 router.patch('/:id/status', authenticate, checkOrderOwnership, orderController.updateOrderStatus)
+
+export default router
