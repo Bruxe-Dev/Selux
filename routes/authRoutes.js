@@ -104,20 +104,32 @@ router.get('/confirm-email', authController.confirmEmail)
  */
 router.post('/login', authController.login)
 
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *  post:
+ *      summary: User forgot password
+ *      description: Generate a token for the user who forgot his/her password
+ *      tags:
+ *       - Authentication & Authorization
+ *      responses:
+ *          200:
+ *              description: User is sent an email
+ */
 router.post('forgot-password', authController.forgotPassword)
 router.post('reset-password', authController.resetPassword)
 /**
- * @swagger
- * /api/auth/logout:
- *   post:
- *     summary: Logout user
- *     description: Instruct client to discard JWT (stateless) and end session
- *     tags:
- *      - Authentication & Authorization
- *     responses:
- *       200:
- *         description: Logout successful
- */
+* @swagger
+* /api/auth/logout:
+*   post:
+*     summary: Logout user
+*     description: Instruct client to discard JWT (stateless) and end session
+*     tags:
+*      - Authentication & Authorization
+*     responses:
+*       200:
+*         description: Logout successful
+*/
 router.post('/logout', authenticate, authController.logout)
 
 export default router
