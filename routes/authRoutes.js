@@ -117,6 +117,19 @@ router.post('/login', authController.login)
  *              description: User is sent an email
  */
 router.post('forgot-password', authController.forgotPassword)
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *  post:
+ *      summary: User resets his/her password
+ *      description: The user creates a new password
+ *      tags:
+ *       - Authentication & Authorization
+ *      responses:
+ *          200:
+ *              description: Password reset Successfully
+ */
 router.post('reset-password', authController.resetPassword)
 /**
 * @swagger
